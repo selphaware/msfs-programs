@@ -16,12 +16,12 @@ class SimProcs(object):
                 steady_throttle: bool = True
                 ) -> Optional[Dict[str, str]]:
 
-        print("Setting initial altitude")
+        print(Fore.YELLOW + "Setting initial altitude")
         self.sc.execute("S ALT " +
                         (self.sc.get(VarCom.GROUND_ALTITUDE) + 10000),
                         "LO")
 
-        print("Parking brakes OFF")
+        print(Fore.CYAN + "Parking brakes OFF")
         self.sc.execute("PB", "LO")
 
         print("Engines/Throttle UP...")
@@ -38,7 +38,7 @@ class SimProcs(object):
                 return
             self.sc.execute(f"TS {round(power * MAX_VAL / 100)}", "LO")
 
-        print("Lifting off...")
+        print(Fore.LIGHTGREEN_EX + "Lifting off...")
         rise_alt += self.sc.get(VarCom.GROUND_ALTITUDE)
         current_alt = 0
         wheel_down = True
@@ -49,30 +49,31 @@ class SimProcs(object):
             if (current_alt > 500 + self.sc.get(VarCom.GROUND_ALTITUDE)) and \
                     wheel_down:
 
-                print("Reached 500 ft")
-                print("Wheel gears UP")
+                print(Fore.LIGHTBLUE_EX + "Reached 500 ft")
+                print(Fore.LIGHTBLUE_EX + "Wheel gears UP")
                 self.sc.execute("GU", "LO")
                 wheel_down = False
 
-                print("Flaps fully down")
+                print(Fore.LIGHTBLUE_EX + "Flaps fully down")
                 self.sc.execute("S FLAP 0", "LO")
 
-                print("Set engines to 80%")
+                print(Fore.LIGHTBLUE_EX + "Set engines to 80%")
                 self.sc.execute("S T 80", "LO")
 
-        print("Turn Autopilot ON")
+        print(Fore.LIGHTMAGENTA_EX + "Turn Autopilot ON")
         self.sc.execute("AP ON", "HI")
 
-        print("Turn TOGA/Autothrottle ON")
+        print(Fore.LIGHTMAGENTA_EX + "Turn TOGA/Autothrottle ON")
         self.sc.execute("TOGA", "HI")
 
-        print("Turn LNAV Navigation ON")
+        print(Fore.LIGHTMAGENTA_EX + "Turn LNAV Navigation ON")
         self.sc.execute("LNAV ON", "HI")
 
-        print(f"Set cruise altitude of {cruise_alt} ft and speed {cruise_kspd} kts")
+        print(Fore.YELLOW + f"Set cruise altitude of {cruise_alt} ft and speed {cruise_kspd} kts")
         self.sc.execute(f"S ALT {cruise_alt}", "LO")
         self.sc.execute(f"S SPD K {cruise_kspd}", "LO")
 
-        print("Take off complete.")
+        print(Fore.WHITE + "Take off complete.")
         print("Hopefully you would have taken off safely and are soon ascending to your cruise "
-              "altitude after which you should be heading towards your desitnation.")
+              "altitude after which you should be heading towards your "
+              "desitnation." + Style.RESET_ALL)
