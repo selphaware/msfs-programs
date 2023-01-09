@@ -93,8 +93,8 @@ class SimCentral(object):
 
         return {"success": True, "message": ""}
 
-    def execute(self, comm: str, sleep_range: str) -> Optional[Dict[str, Union[bool,
-                                                                          str]]]:
+    def execute(self, comm: str, sleep_range: str) -> Optional[Dict[str,
+                                                                    Union[bool, str]]]:
         try:
             vc_map = EventCom.__dict__
             comm = comm.upper()
@@ -125,7 +125,7 @@ class SimCentral(object):
             print(Fore.RED + f"ERROR, recheck your command: {err}" + Style.RESET_ALL)
             return None
 
-        print(Fore.RED + f"ERROR, Invalid Command" + Style.RESET_ALL)
+        print(Fore.RED + f"ERROR: Invalid Command" + Style.RESET_ALL)
 
     def pinfo(self) -> None:
         vc_map = VarCom.__dict__
