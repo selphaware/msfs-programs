@@ -11,16 +11,17 @@ just_fix_windows_console()
 class SimCentral(object):
     def __init__(self,
                  request_time: int = 2000,
-                 sleep_ranges: Tuple[float] = (0.1, 2, 4),
+                 sleep_ranges: Tuple[float] = (0.01, 0.1, 2, 4),
                  test: bool = False):
         self._request_time = request_time
         self.sim = None
         self.req = None
         self.eve = None
         self._sleep_ranges = {
-            "LO": sleep_ranges[0],
-            "MI": sleep_ranges[1],
-            "HI": sleep_ranges[2]}
+            "XO": sleep_ranges[0],
+            "LO": sleep_ranges[1],
+            "MI": sleep_ranges[2],
+            "HI": sleep_ranges[3]}
         self.test = test
         self.start_sim()
 
@@ -52,7 +53,7 @@ class SimCentral(object):
             print(Fore.RED + f"ERROR GET [ {req_id} ]: {err}" + Style.RESET_ALL)
             return None
 
-    def get(self, req_id: VarCom, wait: bool = False) -> Any:
+    def get(self, req_id: VarCom, wait: bool = False, xo: False = True) -> Any:
         if self.test:
             return -4321
 
@@ -62,7 +63,7 @@ class SimCentral(object):
 
                 while val is None:
                     val = self.req.get(req_id)
-                    time.sleep(self.srange("LO"))
+                    time.sleep(self.srange("XO" if xo else "LO"))
                     if not wait:
                         break
 
@@ -138,3 +139,22 @@ class SimCentral(object):
             units = "" if units is None else units
             print(Fore.YELLOW + f"{get_id}:" + Fore.CYAN +
                   f" {lam(val)} {units}" + Style.RESET_ALL)
+
+    def get_next_alt(self) -> Tuple[int, int]:
+        val = None
+        count = 0
+        zval = False
+        while (val is None) or (val == 0):
+            val = self.sim.get(VarCom.GPS_WP_NEXT_ALT, xo=True)
+            count += 1
+            if count > 100:
+                zval = True
+                break
+
+        g_alt = self.get(VarCom.GROUND_ALTITUDE)
+        if zval:
+            red_alt = round((self.sim.get(VarCom.PLANE_ALTITUDE) - g_alt) * .75)
+            return red_alt, red_alt
+
+        else:
+            return round(val * 3.28084), round(6000 + g_alt)
