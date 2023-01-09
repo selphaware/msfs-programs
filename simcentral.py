@@ -94,30 +94,34 @@ class SimCentral(object):
         return {"success": True, "message": ""}
 
     def execute(self, comm: str, sleep_range: str) -> Dict[str, Union[bool, str]]:
-        vc_map = EventCom.__dict__
-        comm = comm.upper()
-        get_coms = [(key, val)
-                    for key, val in vc_map.items() if not ("_" == key[0])]
-        com_list = [x_com for key, (key2, x_com, _, _) in get_coms]
+        try:
+            vc_map = EventCom.__dict__
+            comm = comm.upper()
+            get_coms = [(key, val)
+                        for key, val in vc_map.items() if not ("_" == key[0])]
+            com_list = [x_com for key, (key2, x_com, _, _) in get_coms]
 
-        for key, (i_event, i_com, units, i_lam) in get_coms:
-            i_com = i_com.upper()
+            for key, (i_event, i_com, units, i_lam) in get_coms:
+                i_com = i_com.upper()
 
-            if i_com == comm:
+                if i_com == comm:
 
-                # special case for max auto brakes
-                if (i_event is None) and (i_com == "ABR M"):  # max auto brakes
-                    for _ in range(5):
-                        self.run("INCREASE_AUTOBRAKE", "LO")
-                    return self.run("INCREASE_AUTOBRAKE", "LO")
+                    # special case for max auto brakes
+                    if (i_event is None) and (i_com == "ABR M"):  # max auto brakes
+                        for _ in range(5):
+                            self.run("INCREASE_AUTOBRAKE", "LO")
+                        return self.run("INCREASE_AUTOBRAKE", "LO")
+                    else:
+                        return self.run(i_event, sleep_range, None)
+
+                elif (i_com == comm[:len(i_com)]) and (comm not in com_list):
+                    return self.run(i_event, sleep_range,
+                                    i_lam(comm.split(i_com)[1].strip()))
                 else:
-                    return self.run(i_event, sleep_range, None)
+                    pass
 
-            elif (i_com == comm[:len(i_com)]) and (comm not in com_list):
-                return self.run(i_event, sleep_range,
-                                i_lam(comm.split(i_com)[1].strip()))
-            else:
-                pass
+        except Exception as err:
+            print(Fore.RED + f"ERROR, recheck your command: {err}" + Style.RESET_ALL)
 
     def pinfo(self) -> None:
         vc_map = VarCom.__dict__
