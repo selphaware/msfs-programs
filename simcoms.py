@@ -34,13 +34,13 @@ class VarCom(Tuple[str, str, Any, str]):
                                        lambda x: x * (180 / pi), "DEGREES")
 
     GPS_WP_DISTANCE = ("GPS_WP_DISTANCE", "G WP DIS",
-                       lambda x: x / 1000 / 1.852, "MILES")
+                       lambda x: x / 1000 / KM_TO_NM, "MILES")
 
     GPS_TARGET_DISTANCE = ("GPS_TARGET_DISTANCE", "G TGT DIS",
-                           lambda x: x / 1000 / 1.852, "MILES")
+                           lambda x: x / 1000 / KM_TO_NM, "MILES")
 
     GPS_WP_NEXT_ALT = ("GPS_WP_NEXT_ALT", "G WP NX ALT",
-                       lambda x: round(x * 3.28084), "FT")
+                       lambda x: round(x * M_TO_FT), "FT")
 
     GPS_WP_NEXT_ID = ("GPS_WP_NEXT_ID", "G WP NX ID", lambda x: x, None)
 
@@ -51,7 +51,7 @@ class VarCom(Tuple[str, str, Any, str]):
     GPS_WP_PREV_ID = ("GPS_WP_PREV_ID", "G WP PRE ID", lambda x: x, None)
 
     GROUND_ALTITUDE = ("GROUND_ALTITUDE", "G GD ALT",
-                       lambda x: round(x * 3.28084), "FT")
+                       lambda x: round(x * M_TO_FT), "FT")
 
     GEAR_ON_GROUND = ("GEAR_ON_GROUND", "G GD GR", lambda x: x, None)
 

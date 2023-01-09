@@ -8,6 +8,10 @@ from simcoms import EventCom, VarCom
 just_fix_windows_console()
 
 
+M_TO_FT = 3.28084
+KM_TO_NM = 1.852
+
+
 class SimCentral(object):
     def __init__(self,
                  request_time: int = 2000,
@@ -145,7 +149,7 @@ class SimCentral(object):
         count = 0
         zval = False
         while (val is None) or (val == 0):
-            val = self.sim.get(VarCom.GPS_WP_NEXT_ALT, xo=True)
+            val = self.sim.get(VarCom.GPS_WP_NEXT_ALT, xo=True, wait=True)
             count += 1
             if count > 100:
                 zval = True
@@ -153,8 +157,10 @@ class SimCentral(object):
 
         g_alt = self.get(VarCom.GROUND_ALTITUDE)
         if zval:
-            red_alt = round((self.sim.get(VarCom.PLANE_ALTITUDE) - g_alt) * .75)
+            red_alt = round((self.sim.get(VarCom.PLANE_ALTITUDE,
+                                          xo=True,
+                                          wait=True) - g_alt) * .75)
             return red_alt, red_alt
 
         else:
-            return round(val * 3.28084), round(6000 + g_alt)
+            return round(val * M_TO_FT), round(6000 + g_alt)
