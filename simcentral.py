@@ -1,9 +1,10 @@
 from SimConnect import SimConnect, AircraftRequests, AircraftEvents
 import time
 from typing import Tuple, List, Any, Dict, Union
+from commands import EventCom, VarCom
 
 
-class FSCommand(object):
+class SimCentral(object):
     def __init__(self,
                  request_time: int = 2000,
                  sleep_ranges: Tuple[float] = (0.1, 2, 4)):
@@ -38,7 +39,7 @@ class FSCommand(object):
             print(f"ERROR GET [ {req_id} ]: {err}")
             return None
 
-    def get(self, req_id: str, wait: bool = False) -> Any:
+    def get(self, req_id: VarCom, wait: bool = False) -> Any:
         try:
             val = self.req.get(req_id)
 
@@ -53,8 +54,8 @@ class FSCommand(object):
             print(f"ERROR GET [ {req_id} ]: {err}")
             return None
 
-    def run(self, event_id: str, sleep_range: str,
-                  *args: List[Any]) -> Dict[str, Union[bool, str]]:
+    def run(self, event_id: EventCom, sleep_range: str,
+            *args: List[Any]) -> Dict[str, Union[bool, str]]:
         try:
             event_sim = self.eve.find(event_id)
             event_sim(*args)
@@ -63,3 +64,9 @@ class FSCommand(object):
             print(f"ERROR EVENT [ {event_id} ]: {err}")
             return {"success": False, "message": str(err)}
         return {"success": True, "message": ""}
+
+    def pinfo(self) -> None:
+        get_coms = [key for key in VarCom.__dict__.keys() if not ("_" == key[0])]
+        for get_id in get_coms:
+            g_id, lam, units = self.get(get_id)
+            print(f"{get_id}: {lam(g_id)} {units}")
