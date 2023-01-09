@@ -2,7 +2,7 @@ from colorama import just_fix_windows_console
 from colorama import Fore, Back, Style
 from SimConnect import SimConnect, AircraftRequests, AircraftEvents
 import time
-from typing import Tuple, List, Any, Dict, Union
+from typing import Tuple, List, Any, Dict, Union, Optional
 from simcoms import EventCom, VarCom
 
 just_fix_windows_console()
@@ -72,16 +72,16 @@ class SimCentral(object):
                 print(f"ERROR GET [ {req_id} ]: {err}")
                 return None
 
-    def run(self, event_id: EventCom, sleep_range: str,
+    def run(self, event_id: Optional[str], sleep_range: str,
             *args) -> Dict[str, Union[bool, str]]:
 
         try:
-
             if not self.test:
                 event_sim = self.eve.find(event_id)
                 event_sim(*args)
             else:
-                print(Fore.GREEN + f"TEST: Running Command {event_id}, sleeping for "
+                print(Fore.GREEN + f"TEST: Running Command {event_id}, sleeping "
+                                   f"for "
                       f"{self.srange(sleep_range)}s, VALUE ARGS = {args}"
                       + Style.RESET_ALL)
             time.sleep(self.srange(sleep_range))
@@ -104,7 +104,14 @@ class SimCentral(object):
             i_com = i_com.upper()
 
             if i_com == comm:
-                return self.run(i_event, sleep_range, None)
+
+                # special case for max auto brakes
+                if (i_event is None) and (i_com == "ABR M"):  # max auto brakes
+                    for _ in range(5):
+                        self.run("INCREASE_AUTOBRAKE", "LO")
+                    return self.run("INCREASE_AUTOBRAKE", "LO")
+                else:
+                    return self.run(i_event, sleep_range, None)
 
             elif (i_com == comm[:len(i_com)]) and (comm not in com_list):
                 return self.run(i_event, sleep_range,
