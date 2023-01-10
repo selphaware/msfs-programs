@@ -17,6 +17,7 @@ class SimProcs(object):
                 steady_throttle: int = 1
                 ) -> Optional[Dict[str, str]]:
 
+        print("\nProceeding with Takeoff.")
         print(Fore.YELLOW + "Setting initial altitude")
         gr_alt = self.sc.get("GROUND_ALTITUDE", wait=True)
         self.sc.execute("S ALT " +
@@ -84,6 +85,7 @@ class SimProcs(object):
                       runway: str, land_alt: int,
                       floating_alt: int = 1500,
                       cut_off: float = 5.5) -> None:
+        print("\nProceeding with Approach & Landing.")
         print(Fore.LIGHTGREEN_EX + "Ensure AutoPilot is ON")
         self.sc.execute("AP ON", "HI")
 
