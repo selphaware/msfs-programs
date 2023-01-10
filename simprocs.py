@@ -241,6 +241,11 @@ class SimProcs(object):
                     ap_args = ap_args[1:]
                     print(self.approach_land(*ap_args))
 
+                elif inp[0:5] == "STFI ":
+                    stfi_args = inp.split(chr(32))
+                    stfi_args = stfi_args[1:]
+                    print(self.start_finish(*stfi_args))
+
                 else:
                     print(self.sc.execute(inp, "LO"))
 
