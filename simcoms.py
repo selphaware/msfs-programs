@@ -56,8 +56,6 @@ class VarCom(Tuple[str, str, Any, str]):
     GROUND_ALTITUDE = ("GROUND_ALTITUDE", "G GD ALT",
                        lambda x: round(x * M_TO_FT), "FT")
 
-    GEAR_ON_GROUND = ("GEAR_ON_GROUND", "G GD GR", lambda x: x, None)
-
 
 class EventCom(Tuple[str, str, str, Any]):
     AP_SPD_VAR_SET = ("AP_SPD_VAR_SET", "S SPD K", "KTS", lambda x: int(x))
@@ -103,7 +101,7 @@ class EventCom(Tuple[str, str, str, Any]):
     GEAR_DOWN = ("GEAR_DOWN", "GR DO", None, lambda x: x)
     PARKING_BRAKES = ("PARKING_BRAKES", "PB", None, lambda x: x)
     AP_LOC_HOLD_ON = ("AP_LOC_HOLD_ON", "LOC ON", None, lambda x: x)
-    AP_APR_HOLD_ON = ("AP_LOC_HOLD_ON", "APR ON", None, lambda x: x)
+    AP_APR_HOLD_ON = ("AP_APR_HOLD_ON", "APR ON", None, lambda x: x)
     AP_LOC_HOLD_OFF = ("AP_LOC_HOLD_OFF", "LOC OFF", None, lambda x: x)
     AP_APR_HOLD_OFF = ("AP_APR_HOLD_OFF", "APR OFF", None, lambda x: x)
     AP_NAV1_HOLD_ON = ("AP_NAV1_HOLD_ON", "LNAV ON", None, lambda x: x)

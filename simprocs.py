@@ -28,16 +28,16 @@ class SimProcs(object):
         print("Engines/Throttle UP...")
         if power < 0:
             if not steady_throttle:
-                self.sc.execute("TF", "LO")
+                self.sc.execute("T F", "LO")
             else:
                 for i in range(10, 110, 10):
                     self.sc.execute(f"S T {i}", "LO")
-                self.sc.execute("TF", "LO")
+                self.sc.execute("T F", "LO")
         else:
             if power > 100:
                 print(Fore.RED + "ERROR: Power cannot be > 100%")
                 return
-            self.sc.execute(f"TS {round(power * MAX_VAL / 100)}", "LO")
+            self.sc.execute(f"S T {round(power * MAX_VAL / 100)}", "LO")
 
         print(Fore.LIGHTGREEN_EX + "Lifting off...")
         rise_alt += self.sc.get("GROUND_ALTITUDE", wait=True)
@@ -81,7 +81,8 @@ class SimProcs(object):
 
     def approach_land(self,
                       runway: str, land_alt: int,
-                      floating_alt: int = 1500) -> None:
+                      floating_alt: int = 1500,
+                      cut_off: int = 5.5) -> None:
         print(Fore.LIGHTGREEN_EX + "Ensure AutoPilot is ON")
         self.sc.execute("AP ON", "HI")
 
@@ -125,7 +126,7 @@ class SimProcs(object):
 
                 self.sc.execute(f"S ALT {n_alt}", "LO")
 
-                self.sc.execute("S FLAP I", "LOW")
+                self.sc.execute("S FLAP I", "LO")
 
                 cspeed -= 5
                 cspeed = max(165, cspeed)
@@ -157,7 +158,7 @@ class SimProcs(object):
 
         # while descending and landing, ensure speed and alt are correct
         print("Descending at 155 knots until gears are on the ground")
-        while (self.sc.get("PLANE_ALTITUDE") / land_alt) - 1 > 0.055:
+        while (self.sc.get("PLANE_ALTITUDE") / land_alt) - 1 > cut_off / 100:
             self.sc.execute("S SPD K 155", "LO")
             self.sc.execute("APR ON", "LO")
 

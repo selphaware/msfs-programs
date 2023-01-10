@@ -88,7 +88,7 @@ class SimCentral(object):
         try:
             if not self.test:
                 event_sim = self.eve.find(event_id)
-                if len(args):
+                if (args is not None) and len(args) and (args[0] is not None):
                     event_sim(*args)
                 else:
                     event_sim()
@@ -121,10 +121,11 @@ class SimCentral(object):
                 if i_com == comm:
 
                     # special case for max auto brakes
+                    # TODO: move to procs to clean this up
                     if (i_event is None) and (i_com == "ABR M"):  # max auto brakes
                         for _ in range(5):
-                            self.run("INCREASE_AUTOBRAKE", "LO")
-                        return self.run("INCREASE_AUTOBRAKE", "LO")
+                            self.run("INCREASE_AUTOBRAKE_CONTROL", "LO")
+                        return self.run("INCREASE_AUTOBRAKE_CONTROL", "LO")
                     else:
                         return self.run(i_event, sleep_range, None)
 
@@ -138,7 +139,7 @@ class SimCentral(object):
             print(Fore.RED + f"ERROR, recheck your command: {err}" + Style.RESET_ALL)
             return None
 
-        print(Fore.RED + f"ERROR: Invalid Command" + Style.RESET_ALL)
+        print(Fore.RED + f"ERROR: Invalid Command -> {comm}" + Style.RESET_ALL)
 
     def pinfo(self, refresh: bool = False) -> None:
         vc_map = VarCom.__dict__
@@ -157,15 +158,15 @@ class SimCentral(object):
         count = 0
         zval = False
         while (val is None) or (val == 0):
-            val = self.sim.get(VarCom.GPS_WP_NEXT_ALT, xo=True, wait=True)
+            val = self.get("GPS_WP_NEXT_ALT", xo=True, wait=True)
             count += 1
             if count > 100:
                 zval = True
                 break
 
-        g_alt = self.get(VarCom.GROUND_ALTITUDE)
+        g_alt = self.get("GROUND_ALTITUDE")
         if zval:
-            red_alt = round((self.sim.get(VarCom.PLANE_ALTITUDE,
+            red_alt = round((self.get("PLANE_ALTITUDE",
                                           xo=True,
                                           wait=True) - g_alt) * .75)
             return red_alt, red_alt
