@@ -208,6 +208,8 @@ class SimProcs(object):
                                                                          'utf-8')):
                 time.sleep(1)
                 if count % (60 * 5) == 0:
+                    patt = "-" * 55
+                    print(Fore.GREEN + patt + Style.RESET_ALL)
                     self.sc.pinfo()
                 count += 1
 
