@@ -2,6 +2,7 @@ from typing import Dict, Optional
 from simcoms import MAX_VAL
 from simcentral import SimCentral
 from colorama import Fore, Back, Style
+import time
 
 
 class SimProcs(object):
@@ -174,6 +175,45 @@ class SimProcs(object):
 
         print(Style.RESET_ALL + "Hopefully we have landed safely in the right "
                                 "place!")
+
+    def start_finish(
+            self,
+            runway: str,
+            land_alt: int,
+            wp_id: str,
+            power: int = -1,
+            rise_alt: int = 2000,
+            cruise_alt: int = 33000,
+            cruise_kspd: int = 420,
+            steady_throttle: int = 1,
+            floating_alt: int = 1500,
+            cut_off: int = 5.5
+    ) -> None:
+        inp = input(Fore.WHITE + Back.GREEN + "Do you wish to proceed with "
+                                              "automatic takeoff and landing ? ["
+                                              "Y|N]").upper()
+        if inp == "Y":
+            print(Style.RESET_ALL + "Proceeding.")
+            self.takeoff(power, rise_alt, cruise_alt, cruise_kspd, steady_throttle)
+
+            print(Fore.LIGHTMAGENTA_EX + Back.LIGHTYELLOW_EX + f"Navigating at "
+                                                               "cruise altitude "
+                                                               "until we arrive "
+                                                               f"at {wp_id}, "
+                  f"then we will proceed to approach and land at the destination "
+                  f"airport" + Style.RESET_ALL)
+            wp_id = wp_id.upper()
+            count = 0
+            while not (self.sc.get("GPS_WP_PREV_ID", wait=True) == bytes(wp_id,
+                                                                         'utf-8')):
+                time.sleep(1)
+                if count % (60 * 5):
+                    self.sc.pinfo()
+                count += 1
+
+            self.approach_land(runway, land_alt, floating_alt, cut_off)
+        else:
+            print(Style.RESET_ALL + "Aborting.")
 
     def autobrakes_max(self):
         for _ in range(6):
