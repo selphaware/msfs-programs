@@ -1,7 +1,10 @@
 from typing import Tuple, Any
 from math import pi
 
+
 MAX_VAL = 2 ** 14 - 1  # 16383
+M_TO_FT = 3.28084
+KM_TO_NM = 1.852
 
 
 class VarCom(Tuple[str, str, Any, str]):

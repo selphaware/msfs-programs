@@ -1,5 +1,5 @@
 from typing import Dict, Optional
-from simcoms import VarCom, EventCom, MAX_VAL
+from simcoms import MAX_VAL
 from simcentral import SimCentral
 from colorama import Fore, Back, Style
 
@@ -17,8 +17,9 @@ class SimProcs(object):
                 ) -> Optional[Dict[str, str]]:
 
         print(Fore.YELLOW + "Setting initial altitude")
+        gr_alt = self.sc.get("GROUND_ALTITUDE", wait=True)
         self.sc.execute("S ALT " +
-                        (self.sc.get(VarCom.GROUND_ALTITUDE) + 10000),
+                        str(round(gr_alt + 10000)),
                         "LO")
 
         print(Fore.CYAN + "Parking brakes OFF")
@@ -39,14 +40,14 @@ class SimProcs(object):
             self.sc.execute(f"TS {round(power * MAX_VAL / 100)}", "LO")
 
         print(Fore.LIGHTGREEN_EX + "Lifting off...")
-        rise_alt += self.sc.get(VarCom.GROUND_ALTITUDE, wait=True)
+        rise_alt += self.sc.get("GROUND_ALTITUDE", wait=True)
         current_alt = 0
         wheel_down = True
 
         while current_alt < rise_alt:
-            current_alt = self.sc.get(VarCom.PLANE_ALTITUDE, wait=True)
+            current_alt = self.sc.get("PLANE_ALTITUDE", wait=True)
 
-            if (current_alt > 500 + self.sc.get(VarCom.GROUND_ALTITUDE,
+            if (current_alt > 500 + self.sc.get("GROUND_ALTITUDE",
                                                 wait=True)) and wheel_down:
 
                 print(Fore.LIGHTBLUE_EX + "Reached 500 ft")
@@ -93,7 +94,7 @@ class SimProcs(object):
 
         print("Come to above 6000 ft above ground level")
         new_g_alt = round(6000 + max(land_alt,
-                                     self.sc.get(VarCom.GROUND_ALTITUDE, wait=True)))
+                                     self.sc.get("GROUND_ALTITUDE", wait=True)))
         self.sc.execute(f"S ALT "
                         f"{new_g_alt}", "LO")
 
@@ -108,7 +109,7 @@ class SimProcs(object):
 
         while not (bytes(f"RW{runway}", 'utf-8') == next_wp_id[0:(len(runway) + 2)]):
 
-            next_wp_id = self.sc.get(VarCom.GPS_WP_NEXT_ID, wait=True)
+            next_wp_id = self.sc.get("GPS_WP_NEXT_ID", wait=True)
 
             if not (next_wp_id == prev_id):
 
@@ -117,7 +118,7 @@ class SimProcs(object):
 
                 n_alt = max(
                     floating_alt + max(land_alt,
-                                       self.sc.get(VarCom.GROUND_ALTITUDE,
+                                       self.sc.get("GROUND_ALTITUDE",
                                                    wait=True)),
                     min(max_alt, new_alt)
                     )
@@ -156,7 +157,7 @@ class SimProcs(object):
 
         # while descending and landing, ensure speed and alt are correct
         print("Descending at 155 knots until gears are on the ground")
-        while (self.sc.get(VarCom.PLANE_ALTITUDE) / land_alt) - 1 > 0.055:
+        while (self.sc.get("PLANE_ALTITUDE") / land_alt) - 1 > 0.055:
             self.sc.execute("S SPD K 155", "LO")
             self.sc.execute("APR ON", "LO")
 

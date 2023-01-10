@@ -2,14 +2,12 @@ from colorama import just_fix_windows_console
 from colorama import Fore, Back, Style
 from SimConnect import SimConnect, AircraftRequests, AircraftEvents
 import time
-from typing import Tuple, List, Any, Dict, Union, Optional
+from typing import Tuple, Any, Dict, Union, Optional
 from simcoms import EventCom, VarCom
+from simcoms import M_TO_FT
+
 
 just_fix_windows_console()
-
-
-M_TO_FT = 3.28084
-KM_TO_NM = 1.852
 
 
 class SimCentral(object):
@@ -28,6 +26,8 @@ class SimCentral(object):
             "HI": sleep_ranges[3]}
         self.test = test
         self.start_sim()
+        if not self.test:
+            self.pinfo(refresh=True)
 
     def start_sim(self):
         if not self.test:
@@ -57,7 +57,8 @@ class SimCentral(object):
             print(Fore.RED + f"ERROR GET [ {req_id} ]: {err}" + Style.RESET_ALL)
             return None
 
-    def get(self, req_id: VarCom, wait: bool = False, xo: False = True) -> Any:
+    def get(self, req_id: str, wait: bool = False,
+            xo: False = True, refresh: bool = False) -> Any:
         if self.test:
             return -4321
 
@@ -66,6 +67,10 @@ class SimCentral(object):
                 val = self.req.get(req_id)
 
                 while val is None:
+
+                    if refresh:
+                        self.req.find(req_id).time = 200
+
                     val = self.req.get(req_id)
                     time.sleep(self.srange("XO" if xo else "LO"))
                     if not wait:
@@ -83,7 +88,10 @@ class SimCentral(object):
         try:
             if not self.test:
                 event_sim = self.eve.find(event_id)
-                event_sim(*args)
+                if len(args):
+                    event_sim(*args)
+                else:
+                    event_sim()
             else:
                 print(Fore.GREEN + f"TEST: Running Command {event_id}, sleeping "
                                    f"for "
@@ -132,13 +140,13 @@ class SimCentral(object):
 
         print(Fore.RED + f"ERROR: Invalid Command" + Style.RESET_ALL)
 
-    def pinfo(self) -> None:
+    def pinfo(self, refresh: bool = False) -> None:
         vc_map = VarCom.__dict__
         get_coms = [key for key in vc_map.keys() if not ("_" == key[0])]
 
         for get_id in get_coms:
 
-            val = self.get(get_id)
+            val = self.get(get_id, refresh=refresh)
             _, _, lam, units = vc_map[get_id]
             units = "" if units is None else units
             print(Fore.YELLOW + f"{get_id}:" + Fore.CYAN +
