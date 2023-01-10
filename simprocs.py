@@ -191,7 +191,7 @@ class SimProcs(object):
     ) -> None:
         inp = input(Fore.WHITE + Back.GREEN + "Do you wish to proceed with "
                                               "automatic takeoff and landing ? ["
-                                              "Y|N]").upper()
+                                              "Y|N] " + Style.RESET_ALL).upper()
         if inp == "Y":
             print(Style.RESET_ALL + "Proceeding.")
             self.takeoff(power, rise_alt, cruise_alt, cruise_kspd, steady_throttle)
@@ -207,7 +207,7 @@ class SimProcs(object):
             while not (self.sc.get("GPS_WP_PREV_ID", wait=True) == bytes(wp_id,
                                                                          'utf-8')):
                 time.sleep(1)
-                if count % (60 * 5):
+                if count % (60 * 5) == 0:
                     self.sc.pinfo()
                 count += 1
 
