@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Tuple, Any, List
 from simcoms import MAX_VAL
 from simcentral import SimCentral
 from colorama import Fore, Back, Style
@@ -83,7 +83,7 @@ class SimProcs(object):
     def approach_land(self,
                       runway: str, land_alt: int,
                       floating_alt: int = 1500,
-                      cut_off: int = 5.5) -> None:
+                      cut_off: float = 5.5) -> None:
         print(Fore.LIGHTGREEN_EX + "Ensure AutoPilot is ON")
         self.sc.execute("AP ON", "HI")
 
@@ -187,7 +187,7 @@ class SimProcs(object):
             cruise_kspd: int = 420,
             steady_throttle: int = 1,
             floating_alt: int = 1500,
-            cut_off: int = 5.5
+            cut_off: float = 5.5
     ) -> None:
         inp = input(Fore.WHITE + Back.GREEN + "Do you wish to proceed with "
                                               "automatic takeoff and landing ? ["
@@ -219,11 +219,39 @@ class SimProcs(object):
         for _ in range(6):
             self.sc.execute("ABR I", "LO")
 
+    @staticmethod
+    def get_proc_inputs(
+            proc_args: List[Any],
+            proc_map: List[Tuple[str, Any, Any]]) -> List[Any]:
+
+        if len(proc_args) > 1:
+            proc_args = [proc_map[i][2](x)
+                         for i, x in enumerate(proc_args[1:])]
+
+        else:
+            proc_args = []
+            for proc_var, proc_def, proc_type in proc_map:
+                proc_in = input(
+                    Back.YELLOW + Fore.BLACK +
+                    f"Input: {proc_var} = [ {proc_def} ] >> ")
+                val = proc_type(proc_in) if len(proc_in) else proc_def
+                proc_args.append(val)
+
+        return proc_args
+
     def inter(self) -> None:
         inp = ""
+        print(
+            "\n" + Fore.BLACK + Back.LIGHTCYAN_EX +
+            " ***** --- ** - Flight Simulator "
+            "COMMAND CONSOLE - ** --- ***** " +
+            Fore.LIGHTRED_EX + Back.BLACK +
+            " by Usman Ahmad @ selphaware @ polardesert\n" +
+            Style.RESET_ALL
+            )
 
         while not (inp.upper() == "Q"):
-            inp = input(Fore.LIGHTBLUE_EX + "< FS-COM > :: >> " + Fore.LIGHTGREEN_EX)
+            inp = input(Fore.LIGHTBLUE_EX + "< FS-COM > :: >> " + Fore.LIGHTRED_EX)
             inp = inp.upper()
 
             if not (inp == "Q"):
@@ -231,20 +259,52 @@ class SimProcs(object):
                 if inp == "P":
                     self.sc.pinfo()
 
-                elif inp[0:5] == "TKOF ":
+                elif inp[0:4] == "TKOF":
                     tk_args = inp.split(chr(32))
-                    tk_args = tk_args[1:]
-                    print(self.takeoff(*tk_args))
+                    tk_map = [
+                        ("POWER", -1, int),
+                        ("RISE_ALT", 2000, int),
+                        ("CRUISE_ALT", 33000, int),
+                        ("CRUISE_KSPD", 420, int),
+                        ("STEADY_THROTTLE", 1, int)
+                    ]
+                    tk_args = self.get_proc_inputs(tk_args, tk_map)
+                    print(Style.RESET_ALL + "Starting TAKEOFF")
+                    self.takeoff(*tk_args)
 
-                elif inp[0:5] == "APLA ":
+                elif inp[0:4] == "APLA":
                     ap_args = inp.split(chr(32))
-                    ap_args = ap_args[1:]
-                    print(self.approach_land(*ap_args))
+                    ap_map = [
+                        ("RUNWAY", None, str),
+                        ("LAND_ALT", None, int),
+                        ("FLOATING_ALT", 1500, int),
+                        ("CUT_OFF", 5.5, float)
+                    ]
+                    ap_args = self.get_proc_inputs(ap_args, ap_map)
+                    print(Style.RESET_ALL + "Starting APPROACH & LAND")
+                    self.approach_land(*ap_args)
 
-                elif inp[0:5] == "STFI ":
+                elif inp[0:4] == "STFI":
                     stfi_args = inp.split(chr(32))
-                    stfi_args = stfi_args[1:]
-                    print(self.start_finish(*stfi_args))
+                    stfi_map = [
+                        ("RUNWAY", None, str),
+                        ("LAND_ALT", None, int),
+                        ("WP_ID", None, str),
+                        ("POWER", -1, int),
+                        ("RISE_ALT", 2000, int),
+                        ("CRUISE_ALT", 33000, int),
+                        ("CRUISE_KSPD", 420, int),
+                        ("STEADY_THROTTLE", 1, int),
+                        ("FLOATING_ALT", 1500, int),
+                        ("CUT_OFF", 5.5, float)
+                    ]
+                    stfi_args = self.get_proc_inputs(stfi_args, stfi_map)
+                    print(Style.RESET_ALL +
+                          f"Starting TAKEOFF, RENDEVOUS WITH {stfi_args[2]}, "
+                          f"APPROACH & LAND on RUNWAY {stfi_args[0]}, "
+                          f"and LANDING ALT {stfi_args[9]}")
+
+                    self.start_finish(*stfi_args)
 
                 else:
                     print(self.sc.execute(inp, "LO"))

@@ -35,10 +35,10 @@ class SimCentral(object):
             self.req = AircraftRequests(self.sim, _time=self._request_time)
             self.eve = AircraftEvents(self.sim)
             print(Back.GREEN + Fore.WHITE +
-                  "Connected to LIVE Flight Simulator." + Style.RESET_ALL)
+                  " Connected to LIVE Flight Simulator. " + Style.RESET_ALL)
         else:
             print(Back.BLUE + Fore.WHITE +
-                  "NOT Connected to Flight Simulator. Running in TEST MODE"
+                  " Running in TEST MODE. NOT Connected to Flight Simulator."
                   + Style.RESET_ALL)
 
     def stop_sim(self):
@@ -148,7 +148,7 @@ class SimCentral(object):
 
         for get_id in get_coms:
 
-            val = self.get(get_id, refresh=refresh)
+            val = self.get(get_id, refresh=refresh, wait=True)
             _, _, lam, units = vc_map[get_id]
             units = "" if units is None else units
             print(Fore.YELLOW + f"{get_id}:" + Fore.CYAN +
