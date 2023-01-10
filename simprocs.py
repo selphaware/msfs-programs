@@ -13,7 +13,7 @@ class SimProcs(object):
                 rise_alt: int = 2000,
                 cruise_alt: int = 33000,
                 cruise_kspd: int = 420,
-                steady_throttle: bool = True
+                steady_throttle: int = 1
                 ) -> Optional[Dict[str, str]]:
 
         print(Fore.YELLOW + "Setting initial altitude")
@@ -27,7 +27,7 @@ class SimProcs(object):
 
         print("Engines/Throttle UP...")
         if power < 0:
-            if not steady_throttle:
+            if not (steady_throttle == 1):
                 self.sc.execute("T F", "LO")
             else:
                 for i in range(10, 110, 10):
@@ -174,3 +174,35 @@ class SimProcs(object):
 
         print(Style.RESET_ALL + "Hopefully we have landed safely in the right "
                                 "place!")
+
+    def autobrakes_max(self):
+        for _ in range(6):
+            self.sc.execute("ABR I", "LO")
+
+    def inter(self) -> None:
+        inp = ""
+
+        while not (inp.upper() == "Q"):
+            inp = input(Fore.LIGHTBLUE_EX + "< FS-COM > :: >> " + Fore.LIGHTGREEN_EX)
+            inp = inp.upper()
+
+            if not (inp == "Q"):
+
+                if inp == "P":
+                    self.sc.pinfo()
+
+                elif inp[0:5] == "TKOF ":
+                    tk_args = inp.split(chr(32))
+                    tk_args = tk_args[1:]
+                    print(self.takeoff(*tk_args))
+
+                elif inp[0:5] == "APLA ":
+                    ap_args = inp.split(chr(32))
+                    ap_args = ap_args[1:]
+                    print(self.approach_land(*ap_args))
+
+                else:
+                    print(self.sc.execute(inp, "LO"))
+
+            else:
+                print(Style.RESET_ALL + "Quitting FS-COM.")

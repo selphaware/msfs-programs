@@ -58,7 +58,7 @@ class SimCentral(object):
             return None
 
     def get(self, req_id: str, wait: bool = False,
-            xo: False = True, refresh: bool = False) -> Any:
+            xo: bool = True, refresh: bool = False) -> Any:
         if self.test:
             return -4321
 
@@ -104,7 +104,8 @@ class SimCentral(object):
             print(Fore.RED + f"ERROR EVENT [ {event_id} ]: {err}" + Style.RESET_ALL)
             return {"success": False, "message": str(err)}
 
-        return {"success": True, "message": ""}
+        return {"success": True, "message": f"Command Success: [ {event_id} ] with "
+                                            f"Args = [ {args} ]"}
 
     def execute(self, comm: str, sleep_range: str) -> Optional[Dict[str,
                                                                     Union[bool, str]]]:
