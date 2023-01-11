@@ -206,14 +206,20 @@ class SimProcs(object):
                   f"airport" + Style.RESET_ALL)
             wp_id = wp_id.upper()
             count = 0
-            while not (self.sc.get("GPS_WP_PREV_ID", wait=True) == bytes(wp_id,
-                                                                         'utf-8')):
+            prev_ids = []
+            while wp_id not in prev_ids:
+                prev_id = self.sc.get("GPS_WP_PREV_ID", wait=True).decode('utf-8')
+                if prev_id not in prev_ids:
+                    prev_ids.append(prev_id)
                 time.sleep(1)
                 if count % (60 * 5) == 0:
                     patt = "-" * 55
                     print(Fore.GREEN + patt + Style.RESET_ALL)
                     self.sc.pinfo()
+                    print("PREV_WPS: ", prev_ids)
                 count += 1
+
+            print(Fore.RED + Back.WHITE + f"Reached f{wp_id}." + Style.RESET_ALL)
 
             self.approach_land(runway, land_alt, floating_alt, cut_off)
         else:
@@ -306,7 +312,7 @@ class SimProcs(object):
                     print(Style.RESET_ALL +
                           f"Starting TAKEOFF, RENDEVOUS WITH {stfi_args[2]}, "
                           f"APPROACH & LAND on RUNWAY {stfi_args[0]}, "
-                          f"and LANDING ALT {stfi_args[9]}")
+                          f"and LANDING ALT {stfi_args[1]}")
 
                     self.start_finish(*stfi_args)
 
