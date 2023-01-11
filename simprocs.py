@@ -219,7 +219,8 @@ class SimProcs(object):
                     print("PREV_WPS: ", prev_ids)
                 count += 1
 
-            print(Fore.RED + Back.WHITE + f"Reached f{wp_id}." + Style.RESET_ALL)
+            print("\n" + Fore.RED + Back.WHITE + f"Reached f{wp_id}." +
+                  Style.RESET_ALL)
 
             self.approach_land(runway, land_alt, floating_alt, cut_off)
         else:
