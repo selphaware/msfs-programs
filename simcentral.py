@@ -13,7 +13,7 @@ just_fix_windows_console()
 class SimCentral(object):
     def __init__(self,
                  request_time: int = 2000,
-                 sleep_ranges: Tuple[float] = (0.01, 0.1, 2, 4),
+                 sleep_ranges: Tuple[float] = (0.01, 0.1, 0.65, 4),
                  test: bool = False):
         self._request_time = request_time
         self.sim = None
@@ -154,7 +154,7 @@ class SimCentral(object):
             print(Fore.YELLOW + f"{get_id}:" + Fore.CYAN +
                   f" {lam(val)} {units}" + Style.RESET_ALL)
 
-    def get_next_alt(self) -> Tuple[int, int]:
+    def get_next_alt(self, floating_alt: int) -> Tuple[int, int]:
         val = None
         count = 0
         zval = False
@@ -173,4 +173,4 @@ class SimCentral(object):
             return red_alt, red_alt
 
         else:
-            return round(val * M_TO_FT), round(6000 + g_alt)
+            return round(val * M_TO_FT), round(floating_alt + g_alt)

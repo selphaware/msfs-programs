@@ -118,7 +118,7 @@ class SimProcs(object):
             if not (next_wp_id == prev_id):
 
                 print(Fore.LIGHTYELLOW_EX + Back.BLUE + "Getting next ALT...")
-                new_alt, max_alt = self.sc.get_next_alt()
+                new_alt, max_alt = self.sc.get_next_alt(floating_alt)
 
                 n_alt = max(
                     floating_alt + max(land_alt,
@@ -145,11 +145,11 @@ class SimProcs(object):
 
         # reduce speed to 165 knots
         print(Fore.LIGHTYELLOW_EX + "Reduce speed to 165 knoits")
-        self.sc.execute("S SPD K 165", "LO")
+        self.sc.execute("S SPD K 165", "MI")
 
         # full flaps
         print("Flaps fully up")
-        self.sc.execute("S FLAP 100", "LO")
+        self.sc.execute("S FLAP 100", "MI")
 
         # enable approach model to automatically descend/approach airport and land
         print("Enable APR approach mode")
@@ -157,7 +157,7 @@ class SimProcs(object):
 
         # wheel gear down
         print("Wheel Gears down")
-        self.sc.execute("GR DO", "LO")
+        self.sc.execute("GR DO", "MI")
 
         # while descending and landing, ensure speed and alt are correct
         print("Descending at 155 knots until gears are on the ground")
@@ -169,7 +169,7 @@ class SimProcs(object):
 
         # turn off auto throttle
         print("Turn Autothrottle off")
-        self.sc.execute("AT", "LO")
+        self.sc.execute("AT", "MI")
 
         # cut engines
         print("Cut the engines off, autobrakes should be applied")
@@ -219,7 +219,7 @@ class SimProcs(object):
                     print("PREV_WPS: ", prev_ids)
                 count += 1
 
-            print("\n" + Fore.RED + Back.WHITE + f"Reached f{wp_id}." +
+            print("\n" + Fore.RED + Back.WHITE + f"Reached {wp_id}." +
                   Style.RESET_ALL)
 
             self.approach_land(runway, land_alt, floating_alt, cut_off)
