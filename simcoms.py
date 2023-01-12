@@ -56,6 +56,8 @@ class VarCom(Tuple[str, str, Any, str]):
     GROUND_ALTITUDE = ("GROUND_ALTITUDE", "G GD ALT",
                        lambda x: round(x * M_TO_FT), "FT")
 
+    GEAR_POS = ("GEAR_POSITION", "G GR POS", lambda x: x, None)
+
 
 class EventCom(Tuple[str, str, str, Any]):
     AP_SPD_VAR_SET = ("AP_SPD_VAR_SET", "S SPD K", "KTS", lambda x: int(x))

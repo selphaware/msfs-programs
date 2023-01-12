@@ -157,7 +157,8 @@ class SimProcs(object):
 
         # wheel gear down
         print("Wheel Gears down")
-        self.sc.execute("GR DO", "MI")
+        while not(self.sc.get("GEAR_POS") == 2):  # 1 - UP, 2 - DOWN
+            self.sc.execute("GR DO", "MI")
 
         # while descending and landing, ensure speed and alt are correct
         print("Descending at 155 knots until gears are on the ground")
