@@ -154,7 +154,7 @@ class SimCentral(object):
             print(Fore.YELLOW + f"{get_id}:" + Fore.CYAN +
                   f" {lam(val)} {units}" + Style.RESET_ALL)
 
-    def get_next_alt(self, floating_alt: int) -> Tuple[int, int]:
+    def get_next_alt(self, floating_alt: int, land_alt: int) -> int:
         val = None
         count = 0
         zval = False
@@ -165,12 +165,14 @@ class SimCentral(object):
                 zval = True
                 break
 
-        g_alt = self.get("GROUND_ALTITUDE")
+        g_alt = self.get("GROUND_ALTITUDE", xo=True, wait=True) * M_TO_FT
+
         if zval:
-            red_alt = round((self.get("PLANE_ALTITUDE",
-                                          xo=True,
-                                          wait=True) - g_alt) * .75)
-            return red_alt, red_alt
+            red_alt = round(
+                ((self.get("PLANE_ALTITUDE", xo=True, wait=True) - g_alt) * .75)
+                + g_alt
+            )
+            return max(floating_alt + land_alt, red_alt)
 
         else:
-            return round(val * M_TO_FT), round(floating_alt + g_alt)
+            return round(val * M_TO_FT)

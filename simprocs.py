@@ -1,5 +1,5 @@
 from typing import Dict, Optional, Tuple, Any, List
-from simcoms import MAX_VAL
+from simcoms import MAX_VAL, M_TO_FT
 from simcentral import SimCentral
 from colorama import Fore, Back, Style
 import time
@@ -19,7 +19,7 @@ class SimProcs(object):
 
         print("\nProceeding with Takeoff.")
         print(Fore.YELLOW + "Setting initial altitude")
-        gr_alt = self.sc.get("GROUND_ALTITUDE", wait=True)
+        gr_alt = self.sc.get("GROUND_ALTITUDE", wait=True) * M_TO_FT
         self.sc.execute("S ALT " +
                         str(round(gr_alt + 10000)),
                         "LO")
@@ -42,7 +42,7 @@ class SimProcs(object):
             self.sc.execute(f"S T {round(power * MAX_VAL / 100)}", "LO")
 
         print(Fore.LIGHTGREEN_EX + "Lifting off...")
-        rise_alt += self.sc.get("GROUND_ALTITUDE", wait=True)
+        rise_alt += self.sc.get("GROUND_ALTITUDE", wait=True) * M_TO_FT
         current_alt = 0
         wheel_down = True
 
@@ -50,7 +50,7 @@ class SimProcs(object):
             current_alt = self.sc.get("PLANE_ALTITUDE", wait=True)
 
             if (current_alt > 500 + self.sc.get("GROUND_ALTITUDE",
-                                                wait=True)) and wheel_down:
+                                                wait=True) * M_TO_FT) and wheel_down:
 
                 print(Fore.LIGHTBLUE_EX + "Reached 500 ft")
                 print(Fore.LIGHTBLUE_EX + "Wheel gears UP")
@@ -97,13 +97,15 @@ class SimProcs(object):
         self.sc.execute(f"S SPD K {cspeed}", "LO")
 
         print("Come to above 6000 ft above ground level")
-        new_g_alt = round(6000 + max(land_alt,
-                                     self.sc.get("GROUND_ALTITUDE", wait=True)))
+        new_g_alt = round(6000 +
+                          max(land_alt,
+                              self.sc.get("GROUND_ALTITUDE", wait=True) * M_TO_FT)
+                          )
         self.sc.execute(f"S ALT "
                         f"{new_g_alt}", "LO")
 
         print("Set Auto brakes to MAX")
-        self.sc.execute("ABR M", "MI")
+        self.sc.execute("ABR M", "HI")
 
         # keep decreasing alt + speed, increase flaps until approaching airport
         print(Fore.LIGHTMAGENTA_EX + "Descend, decrease speed, increase flaps " \
@@ -118,16 +120,12 @@ class SimProcs(object):
             if not (next_wp_id == prev_id):
 
                 print(Fore.LIGHTYELLOW_EX + Back.BLUE + "Getting next ALT...")
-                new_alt, max_alt = self.sc.get_next_alt(floating_alt)
+                new_alt = min(
+                    self.sc.get_next_alt(floating_alt, land_alt),
+                    new_g_alt
+                )
 
-                n_alt = max(
-                    floating_alt + max(land_alt,
-                                       self.sc.get("GROUND_ALTITUDE",
-                                                   wait=True)),
-                    min(max_alt, new_alt)
-                    )
-
-                self.sc.execute(f"S ALT {n_alt}", "LO")
+                self.sc.execute(f"S ALT {new_alt}", "LO")
 
                 self.sc.execute("S FLAP I", "LO")
 
@@ -137,11 +135,18 @@ class SimProcs(object):
 
                 prev_id = next_wp_id
                 print(Fore.LIGHTWHITE_EX + Back.MAGENTA +
-                    f"AT {next_wp_id}, DECREASING ALT to {n_alt}, SPEED to "
+                    f"AT {next_wp_id}, DECREASING ALT to {new_alt}, SPEED to "
                     f"{cspeed}"
                     )
 
         print(Style.RESET_ALL + Fore.LIGHTBLUE_EX + "APPROACHING AIRPORT !!!")
+
+        final_alt = min(
+            int(land_alt + floating_alt),
+            self.sc.get("PLANE_ALTITUDE", wait=True)
+        )
+        print(Fore.LIGHTCYAN_EX + f"Reducing altitude to f{final_alt}")
+        self.sc.execute(f"S ALT {final_alt}", "MI")
 
         # reduce speed to 165 knots
         print(Fore.LIGHTYELLOW_EX + "Reduce speed to 165 knoits")
