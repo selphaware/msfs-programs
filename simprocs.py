@@ -52,7 +52,7 @@ class SimProcs(object):
             if (current_alt > 500 + self.sc.get("GROUND_ALTITUDE",
                                                 wait=True) * M_TO_FT) and wheel_down:
 
-                print(Fore.LIGHTBLUE_EX + "Reached 500 ft")
+                print(Fore.LIGHTBLUE_EX + "Reached 500 ft above ground level")
                 print(Fore.LIGHTBLUE_EX + "Wheel gears UP")
                 self.sc.execute("GR UP", "LO")
                 wheel_down = False
@@ -145,7 +145,7 @@ class SimProcs(object):
             int(land_alt + floating_alt),
             self.sc.get("PLANE_ALTITUDE", wait=True)
         )
-        print(Fore.LIGHTCYAN_EX + f"Reducing altitude to f{final_alt}")
+        print(Fore.LIGHTCYAN_EX + f"Reducing altitude to {final_alt}")
         self.sc.execute(f"S ALT {final_alt}", "MI")
 
         # reduce speed to 165 knots
@@ -162,12 +162,16 @@ class SimProcs(object):
 
         # wheel gear down
         print("Wheel Gears down")
-        while not(self.sc.get("GEAR_POS") == 2):  # 1 - UP, 2 - DOWN
+        while self.sc.get("GEAR_HANDLE_POSITION", wait=True) == 0:
+            # 0 - UP,
+            # 1 - DOWN
             self.sc.execute("GR DO", "MI")
 
         # while descending and landing, ensure speed and alt are correct
         print("Descending at 155 knots until gears are on the ground")
-        while (self.sc.get("PLANE_ALTITUDE") / land_alt) - 1 > cut_off / 100:
+        while (
+                self.sc.get("PLANE_ALTITUDE", wait=True, xo=True) / land_alt
+        ) - 1 > cut_off / 100:
             self.sc.execute("S SPD K 155", "LO")
             self.sc.execute("APR ON", "LO")
 
@@ -210,10 +214,22 @@ class SimProcs(object):
                                                                f"at {wp_id}, "
                   f"then we will proceed to approach and land at the destination "
                   f"airport" + Style.RESET_ALL)
+
             wp_id = wp_id.upper()
             count = 0
             prev_ids = []
+            approaching_rendezvous = False
+
             while wp_id not in prev_ids:
+                next_id = self.sc.get("GPS_WP_NEXT_ID", wait=True).decode('utf-8')
+                if (wp_id == next_id) and not approaching_rendezvous:
+                    print(Fore.CYAN +
+                          f"Next WP is RENDEZVOUS point {next_id}. Reducing to "
+                          f"200KTS" +
+                          Style.RESET_ALL)
+                    self.sc.execute("S SPD K 200", "MI")
+                    approaching_rendezvous = True
+
                 prev_id = self.sc.get("GPS_WP_PREV_ID", wait=True).decode('utf-8')
                 if prev_id not in prev_ids:
                     prev_ids.append(prev_id)
