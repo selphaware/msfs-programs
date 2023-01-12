@@ -1,7 +1,10 @@
 from simprocs import *
+import sys
 
-sc = SimCentral()
-sp = SimProcs(sc)
 
 if __name__ == "__main__":
+    args = sys.argv[1:]
+    test = args[0].upper() == "TEST"
+    sc = SimCentral(test=test)
+    sp = SimProcs(sc)
     sp.inter()
