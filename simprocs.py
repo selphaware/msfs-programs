@@ -238,7 +238,8 @@ class SimProcs(object):
                 if (wp_id == next_id) and not approaching_rendezvous:
                     half_alt = min(
                         self.sc.get("PLANE_ALTITUDE", wait=True, xo=True),
-                        8000
+                        8000 +
+                        self.sc.get("GROUND_ALTITUDE", wait=True, xo=True) * M_TO_FT
                     )
                     print(Fore.CYAN + f"@ RENDEZVOUS Reducing Altitude to"
                                       f" {half_alt}" +
