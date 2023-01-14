@@ -209,6 +209,7 @@ class SimProcs(object):
             cruise_alt: int = 33000,
             cruise_kspd: int = 420,
             steady_throttle: int = 1,
+            elevator_trim: int = -20,
             floating_alt: int = 1500,
             cut_off: float = 5.5
     ) -> None:
@@ -217,7 +218,8 @@ class SimProcs(object):
                                               "Y|N] " + Style.RESET_ALL).upper()
         if inp == "Y":
             print(Style.RESET_ALL + "Proceeding.")
-            self.takeoff(power, rise_alt, cruise_alt, cruise_kspd, steady_throttle)
+            self.takeoff(power, rise_alt, cruise_alt, cruise_kspd,
+                         steady_throttle, elevator_trim)
 
             print(Fore.LIGHTMAGENTA_EX + Back.LIGHTYELLOW_EX + f"Navigating at "
                                                                "cruise altitude "
