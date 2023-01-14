@@ -28,6 +28,8 @@ class VarCom(Tuple[str, str, Any, str]):
                            lambda x: x * (180 / pi),
                            "DEGREES")
 
+    ELEVATOR_TRIM_PCT = ("ELEVATOR_TRIM_PCT", "G E T", lambda x: x * 100, "%")
+
     TRAILING_EDGE_FLAPS_LEFT_ANGLE = ("TRAILING_EDGE_FLAPS_LEFT_ANGLE",
                                       "G FLAP L",
                                       lambda x: x * (180 / pi), "DEGREES")
@@ -49,7 +51,11 @@ class VarCom(Tuple[str, str, Any, str]):
 
     AUTOPILOT_FLIGHT_LEVEL_CHANGE = ("AUTOPILOT_FLIGHT_LEVEL_CHANGE",
                                      "G FLC",
-                                     lambda x: (x - 1) == 0, None)
+                                     lambda x: x == 1, None)
+
+    AUTOPILOT_APPROACH_HOLD = ("AUTOPILOT_APPROACH_HOLD",
+                               "G APR H",
+                               lambda x: x == 1, None)
 
     GPS_WP_PREV_ID = ("GPS_WP_PREV_ID", "G WP PRE ID", lambda x: x, None)
 
@@ -57,8 +63,6 @@ class VarCom(Tuple[str, str, Any, str]):
                        lambda x: round(x * M_TO_FT), "FT")
 
     GEAR_HANDLE_POSITION = ("GEAR_HANDLE_POSITION", "G GR POS", lambda x: x, None)
-
-    ELEVATOR_TRIM_PCT = ("ELEVATOR_TRIM_PCT", "G E T", lambda x: x, "%")
 
 
 class EventCom(Tuple[str, str, str, Any]):
