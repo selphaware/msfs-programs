@@ -14,7 +14,8 @@ class SimProcs(object):
                 rise_alt: int = 2000,
                 cruise_alt: int = 33000,
                 cruise_kspd: int = 420,
-                steady_throttle: int = 1
+                steady_throttle: int = 1,
+                elevator_trim: int = -20
                 ) -> Optional[Dict[str, str]]:
 
         print("\nProceeding with Takeoff.")
@@ -50,11 +51,13 @@ class SimProcs(object):
         while current_alt < rise_alt:
             current_alt = self.sc.get("PLANE_ALTITUDE", wait=True)
 
-            if not elev_trim_set and self.sc.get("AIRSPEED_INDICATED") > 180:
+            if not elev_trim_set and (self.sc.get("AIRSPEED_INDICATED",
+                                                  wait=True,
+                                                  xo=True) > 165):
                 print(Fore.LIGHTRED_EX +
-                      "Setting elevator trim to 20% for liftoff" +
+                      f"Setting elevator trim to {elevator_trim}% for liftoff" +
                       Style.RESET_ALL)
-                self.sc.execute("S E T +20", "LO")
+                self.sc.execute(f"S E T {elevator_trim}", "LO")
                 elev_trim_set = True
 
             if (current_alt > 500 + self.sc.get("GROUND_ALTITUDE",
@@ -317,7 +320,8 @@ class SimProcs(object):
                         ("RISE_ALT", 2000, int),
                         ("CRUISE_ALT", 33000, int),
                         ("CRUISE_KSPD", 420, int),
-                        ("STEADY_THROTTLE", 1, int)
+                        ("STEADY_THROTTLE", 1, int),
+                        ("ELEVATOR_TRIM", -20, int)
                     ]
                     tk_args = self.get_proc_inputs(tk_args, tk_map)
                     print(Style.RESET_ALL + "Starting TAKEOFF")
@@ -346,6 +350,7 @@ class SimProcs(object):
                         ("CRUISE_ALT", 33000, int),
                         ("CRUISE_KSPD", 420, int),
                         ("STEADY_THROTTLE", 1, int),
+                        ("ELEVATOR_TRIM", -20, int),
                         ("FLOATING_ALT", 1500, int),
                         ("CUT_OFF", 5.5, float)
                     ]
