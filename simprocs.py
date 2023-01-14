@@ -45,9 +45,17 @@ class SimProcs(object):
         rise_alt += self.sc.get("GROUND_ALTITUDE", wait=True) * M_TO_FT
         current_alt = 0
         wheel_down = True
+        elev_trim_set = False
 
         while current_alt < rise_alt:
             current_alt = self.sc.get("PLANE_ALTITUDE", wait=True)
+
+            if not elev_trim_set and self.sc.get("AIRSPEED_INDICATED") > 180:
+                print(Fore.LIGHTRED_EX +
+                      "Setting elevator trim to 20% for liftoff" +
+                      Style.RESET_ALL)
+                self.sc.execute("S E T +20", "LO")
+                elev_trim_set = True
 
             if (current_alt > 500 + self.sc.get("GROUND_ALTITUDE",
                                                 wait=True) * M_TO_FT) and wheel_down:
