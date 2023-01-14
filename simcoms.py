@@ -58,6 +58,8 @@ class VarCom(Tuple[str, str, Any, str]):
 
     GEAR_HANDLE_POSITION = ("GEAR_HANDLE_POSITION", "G GR POS", lambda x: x, None)
 
+    ELEVATOR_TRIM_PCT = ("ELEVATOR_TRIM_PCT", "G E T", lambda x: x, "%")
+
 
 class EventCom(Tuple[str, str, str, Any]):
     AP_SPD_VAR_SET = ("AP_SPD_VAR_SET", "S SPD K", "KTS", lambda x: int(x))
@@ -76,6 +78,9 @@ class EventCom(Tuple[str, str, str, Any]):
 
     FLAPS_SET = ("FLAPS_SET", "S FLAP", "%", lambda x: round(float(x) * MAX_VAL /
                                                                    100))
+
+    AXIS_ELEV_TRIM_SET = ("AXIS_ELEV_TRIM_SET", "S E T", "%",
+                          lambda x: round(float(x) * MAX_VAL / 100))
 
     AP_MASTER = ("AP_MASTER", "AP", None, lambda x: x)
     AUTOPILOT_OFF = ("AUTOPILOT_OFF", "AP OFF", None, lambda x: x)

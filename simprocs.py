@@ -92,10 +92,6 @@ class SimProcs(object):
         print("Ensure LNAV is ON")
         self.sc.execute("LNAV ON", "HI")
 
-        print("Bring speed down to 200 knots")
-        cspeed = 200
-        self.sc.execute(f"S SPD K {cspeed}", "LO")
-
         print("Come to above 6000 ft above ground level")
         new_g_alt = round(6000 +
                           max(land_alt,
@@ -103,6 +99,10 @@ class SimProcs(object):
                           )
         self.sc.execute(f"S ALT "
                         f"{new_g_alt}", "LO")
+
+        print("Bring speed down to 200 knots")
+        cspeed = 200
+        self.sc.execute(f"S SPD K {cspeed}", "LO")
 
         print("Set Auto brakes to MAX")
         self.sc.execute("ABR M", "HI")
@@ -223,11 +223,21 @@ class SimProcs(object):
             while wp_id not in prev_ids:
                 next_id = self.sc.get("GPS_WP_NEXT_ID", wait=True).decode('utf-8')
                 if (wp_id == next_id) and not approaching_rendezvous:
+                    half_alt = min(
+                        self.sc.get("PLANE_ALTITUDE", wait=True, xo=True),
+                        8000
+                    )
+                    print(Fore.CYAN + f"@ RENDEZVOUS Reducing Altitude to"
+                                      f" {half_alt}" +
+                          Style.RESET_ALL)
+                    self.sc.execute(f"S ALT {half_alt}", "HI")
+
                     print(Fore.CYAN +
                           f"Next WP is RENDEZVOUS point {next_id}. Reducing to "
                           f"200KTS" +
                           Style.RESET_ALL)
                     self.sc.execute("S SPD K 200", "MI")
+
                     approaching_rendezvous = True
 
                 prev_id = self.sc.get("GPS_WP_PREV_ID", wait=True).decode('utf-8')
@@ -276,7 +286,7 @@ class SimProcs(object):
         inp = ""
         print(
             "\n" + Fore.BLACK + Back.LIGHTCYAN_EX +
-            " ***** --- ** - Flight Simulator "
+            " ***** --- ** - Flight Simulator v1.0 "
             "COMMAND CONSOLE - ** --- ***** " +
             Fore.LIGHTRED_EX + Back.BLACK +
             " by Usman Ahmad @ selphaware @ polardesert\n" +
