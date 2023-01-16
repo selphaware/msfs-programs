@@ -86,12 +86,7 @@ class Aircraft(object):
             return getattr(self, req_id)
 
         else:
-            var_ids = self.get_var_ids()
-            ret = dict()
-            for var_id in var_ids:
-                ret[var_id] = getattr(self, var_id)
-
-            return ret
+            return {var_id: getattr(self, var_id) for var_id in self.get_var_ids()}
 
 
 if __name__ == "__main__":
