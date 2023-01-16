@@ -1,7 +1,8 @@
-from typing import Optional, Union, Dict, Callable, List
+from typing import Optional, Union, Dict
 from SimConnect import AircraftRequests, AircraftEvents
 from time import sleep
 
+from aircraft.find_funcs import test_find_func, wrap_find_func
 from aircraft.idmap.event_map import EVE_IDS_MAP
 from idmap.request_map import REQ_IDS_MAP
 
@@ -27,31 +28,13 @@ class Aircraft(object):
 
         # SET Simulation Variables
         if eve is None:
-            find_func = lambda x_set: lambda *y_args: print(
-                f"TEST: Executing command {x_set}, Args: {y_args}"
-            )
-
-            def _find_func(in_event_id: str):
-                def _in_f1(*in_args):
-                    print(
-                        f"TEST: Executing command {in_event_id}, Args: {in_args}"
-                    )
-                return _in_f1
-
-            find_func = _find_func
+            find_func = test_find_func
 
         else:
             find_func = eve.find
 
-        def final_find_func(main_event_id: str, cast_logic: Callable):
-            def in_find_func(time_sleep: float,
-                             *z_args: List[Union[str, int, float]]):
-                find_func(main_event_id)(*[cast_logic(in_z) for in_z in z_args])
-                if time_sleep > 0:
-                    sleep(time_sleep)
-            return in_find_func
-
-        set_vars = {f"_{x_main}": final_find_func(x_main, y_main["CAST_LOGIC"])
+        set_vars = {f"_{x_main}": wrap_find_func(find_func)(x_main,
+                                                            y_main["CAST_LOGIC"])
                     for x_main, y_main in EVE_IDS_MAP.items()}
         self.__dict__.update(set_vars)
 
