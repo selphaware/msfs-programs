@@ -45,11 +45,9 @@ class Aircraft(object):
     def var_id_valid(self, var_id: str) -> bool:
         return var_id.upper() in self.get_var_ids()
 
-    def refresh(self, req_id: Optional[str] = None,
-                tsleep: float = 0.0) -> None:
+    def refresh(self, req_id: Optional[str] = None) -> None:
         """
 
-        :param tsleep:
         :param req_id:
         :return:
         """
@@ -67,20 +65,23 @@ class Aircraft(object):
 
         for var_id in var_ids:
             setattr(self, var_id, self.__req.get(var_id))
-            if tsleep > 0:
-                sleep(tsleep)
 
-    def get(self, req_id: Optional[str] = None, refresh_vals: bool = True) -> Union[
+    def get(self, req_id: Optional[str] = None,
+            refresh_vals: bool = True, time_sleep: float = 0.0) -> Union[
         str, int, float, Dict[str, Union[str, int, float]]
     ]:
         """
 
+        :param time_sleep:
         :param req_id:
         :param refresh_vals:
         :return:
         """
         if refresh_vals:
             self.refresh(req_id)
+
+        if time_sleep > 0:
+            sleep(time_sleep)
 
         if req_id is not None:
             return getattr(self, req_id)
