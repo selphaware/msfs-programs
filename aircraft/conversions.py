@@ -8,6 +8,8 @@ M_TO_FT_RATIO = 3.28084
 
 IDENTITY = lambda x: x
 
+INT_CONV = lambda x: int(float(x))
+
 RAD_TO_DEG_HALF = lambda x: (1 - (x / pi)) * (180 / pi)
 
 RAD_TO_DEG = lambda x: x * (180 / pi)

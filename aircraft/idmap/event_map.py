@@ -1,11 +1,11 @@
-from typing import Dict, Union, Any, Callable
-from aircraft.conversions import IDENTITY, PCT_REVR
+from typing import Dict, Union, Callable
+from aircraft.conversions import IDENTITY, PCT_REVR, INT_CONV
 
 EVE_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
 
     "AP_SPD_VAR_SET": {
         "COMMAND": "S SPD K",
-        "CAST_LOGIC": lambda x: int(x),
+        "CAST_LOGIC": INT_CONV,
         "UNIT": "KTS"
     },
 
@@ -17,7 +17,7 @@ EVE_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
 
     "AP_ALT_VAR_SET_ENGLISH": {
         "COMMAND": "S ALT",
-        "CAST_LOGIC": lambda x: int(x),
+        "CAST_LOGIC": INT_CONV,
         "UNIT": "FT"
     },
 

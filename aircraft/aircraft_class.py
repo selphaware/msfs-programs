@@ -7,7 +7,8 @@ from aircraft.idmap.event_map import EVE_IDS_MAP
 from aircraft.idmap.request_map import REQ_IDS_MAP
 
 INIT_VAL = -9999
-
+IN_STRUCT = Union[str, int, float]
+OUT_STRUCT = Union[str, int, float, Dict[str, Union[str, int, float]]]
 
 class Aircraft(object):
     def __init__(self,
@@ -97,9 +98,7 @@ class Aircraft(object):
 
     def get(self, req_id: Optional[str] = None,
             refresh_vals: bool = True, time_sleep: float = 0.0,
-            request_refresh: bool = False) -> Union[
-        str, int, float, Dict[str, Union[str, int, float]]
-    ]:
+            request_refresh: bool = False) -> OUT_STRUCT:
         """
 
         :param request_refresh:
@@ -137,11 +136,10 @@ class Aircraft(object):
         efunc = getattr(self, eve_id)
         efunc(time_sleep, *args)
 
-    def com(self, com_id: str, args: Optional[List[Union[str, int, float]]] = None,
-            time_sleep: float = 0.1) -> Optional[Union[str, int, float,
-                                                       Dict[str,
-                                                            Union[str, int,
-                                                                  float]]]]:
+    def com(
+            self, com_id: str, args: Optional[List[IN_STRUCT]] = None,
+            time_sleep: float = 0.1
+    ) -> Optional[OUT_STRUCT]:
         """
 
         :param com_id:
@@ -161,6 +159,19 @@ class Aircraft(object):
         else:
             var_id = self.__eve_coms[com_id]
             self.run(var_id, args, time_sleep)
+
+    def com_inter(self, com_str: str, time_sleep: float = 0.1):
+        """
+
+        :param com_str:
+        :param time_sleep:
+        :return:
+        """
+        com_ls = com_str.split("=")
+        var_id = com_ls[0].strip()
+        args = com_ls[1].strip().split(chr(32))
+
+        return self.com(var_id, args, time_sleep)
 
 
 if __name__ == "__main__":
