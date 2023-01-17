@@ -26,6 +26,7 @@ class Aircraft(object):
         # GET Simulation Variables
         get_vars = {x: y["CAST_LOGIC"](INIT_VAL)
                     for x, y in REQ_IDS_MAP.items()}
+
         self.__dict__.update(get_vars)
 
         # SET Simulation Variables
@@ -38,11 +39,20 @@ class Aircraft(object):
         set_vars = {f"_{x_main}": wrap_find_func(find_func)(x_main,
                                                             y_main["CAST_LOGIC"])
                     for x_main, y_main in EVE_IDS_MAP.items()}
+
         self.__dict__.update(set_vars)
 
         # Initialise GET attributes
         if not test:
             self.refresh(initialise=True)
+
+        # Initialise COMmand variables
+        get_coms = {x: y["COMMAND"] for x, y in REQ_IDS_MAP.items()}
+        self.req_coms = get_coms
+
+        set_coms = {x_main: y_main["COMMAND"]
+                    for x_main, y_main in EVE_IDS_MAP.items()}
+        self.eve_com = set_coms
 
     def get_req_ids(self):
         return [x_id.upper()
@@ -119,6 +129,9 @@ class Aircraft(object):
 
         efunc = getattr(self, eve_id)
         efunc(time_sleep, *args)
+
+    def com(self, com_id):
+        pass
 
 
 if __name__ == "__main__":
