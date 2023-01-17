@@ -38,7 +38,7 @@ REQ_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
 
     "AILERON_POSITION": {
         "COMMAND": "G ALERPOS",
-        "CAST_LOGIC": lambda x: x,
+        "CAST_LOGIC": IDENTITY,
         "UNITS": "DEGREES"
     },
 

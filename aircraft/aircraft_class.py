@@ -47,12 +47,12 @@ class Aircraft(object):
             self.refresh(initialise=True)
 
         # Initialise COMmand variables
-        get_coms = {x: y["COMMAND"] for x, y in REQ_IDS_MAP.items()}
-        self.req_coms = get_coms
+        get_coms = {y["COMMAND"]: x for x, y in REQ_IDS_MAP.items()}
+        self.__req_coms = get_coms
 
-        set_coms = {x_main: y_main["COMMAND"]
+        set_coms = {y_main["COMMAND"]: x_main
                     for x_main, y_main in EVE_IDS_MAP.items()}
-        self.eve_com = set_coms
+        self.__eve_coms = set_coms
 
     def get_req_ids(self):
         return [x_id.upper()
@@ -123,6 +123,13 @@ class Aircraft(object):
     def run(self, eve_id: str,
             args: Optional[List[Union[str, int, float]]] = None,
             time_sleep: float = 0.1) -> None:
+        """
+
+        :param eve_id:
+        :param args:
+        :param time_sleep:
+        :return:
+        """
         eve_id = f"_{eve_id}"
         if not self.eve_id_valid(eve_id):
             raise Exception(f"Event id {eve_id} not found.")
@@ -130,8 +137,30 @@ class Aircraft(object):
         efunc = getattr(self, eve_id)
         efunc(time_sleep, *args)
 
-    def com(self, com_id):
-        pass
+    def com(self, com_id: str, args: Optional[List[Union[str, int, float]]] = None,
+            time_sleep: float = 0.1) -> Optional[Union[str, int, float,
+                                                       Dict[str,
+                                                            Union[str, int,
+                                                                  float]]]]:
+        """
+
+        :param com_id:
+        :param args:
+        :param time_sleep:
+        :return:
+        """
+        com_id = com_id.upper()
+
+        if "G " == com_id[0:2]:
+            var_id = self.__req_coms[com_id]
+            return self.get(var_id, time_sleep=time_sleep)
+
+        elif "G" == com_id:
+            return self.get(time_sleep=time_sleep)
+
+        else:
+            var_id = self.__eve_coms[com_id]
+            self.run(var_id, args, time_sleep)
 
 
 if __name__ == "__main__":
