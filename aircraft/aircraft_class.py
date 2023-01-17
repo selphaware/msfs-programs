@@ -1,4 +1,4 @@
-from typing import Optional, Union, List
+from typing import Optional, Tuple, List
 from SimConnect import AircraftRequests, AircraftEvents
 from time import sleep
 
@@ -161,22 +161,38 @@ class Aircraft(object):
             var_id = self.__eve_coms[com_id]
             self.run(var_id, args, time_sleep)
 
-    def com_inter(self, com_str: str, time_sleep: float = 0.1):
+    def com_inter(self, com_str: str,
+                  time_sleep: float = 0.1) -> Optional[OUT_STRUCT]:
         """
 
         :param com_str:
         :param time_sleep:
         :return:
         """
-        com_ls = com_str.split("=")
-        var_id = com_ls[0].strip()
+        try:
+            init_com_ls = com_str.split("/")
+            com_ls = init_com_ls[0].split("=")
+            var_id = com_ls[0].strip()
 
-        if len(com_ls) > 1:
-            args = com_ls[1].strip().split(chr(32))
-        else:
-            args = []
+            if len(com_ls) > 1:
+                args = com_ls[1].strip().split(chr(32))
+            else:
+                args = []
 
-        return self.com(var_id, args, time_sleep)
+            if len(init_com_ls) > 1:
+                time_sleep = float(init_com_ls[1].strip())
+
+            return self.com(var_id, args, time_sleep=time_sleep)
+
+        except Exception as err:
+            return f"ERROR: {err}"
+
+    def inter(self, com_ls: List[str]) -> List[Tuple[str, OUT_STRUCT]]:
+        ret = []
+        for com_ln in com_ls:
+            ret.append((com_ln, self.com_inter(com_ln)))
+
+        return ret
 
 
 if __name__ == "__main__":
