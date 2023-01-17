@@ -1,14 +1,13 @@
-from typing import Optional, Union, Dict, List
+from typing import Optional, Union, List
 from SimConnect import AircraftRequests, AircraftEvents
 from time import sleep
 
+from aircraft.structs import IN_STRUCT, OUT_STRUCT
+from aircraft.conversions import INIT_VAL
 from aircraft.find_funcs import test_find_func, wrap_find_func
 from aircraft.idmap.event_map import EVE_IDS_MAP
 from aircraft.idmap.request_map import REQ_IDS_MAP
 
-INIT_VAL = -9999
-IN_STRUCT = Union[str, int, float]
-OUT_STRUCT = Union[str, int, float, Dict[str, Union[str, int, float]]]
 
 class Aircraft(object):
     def __init__(self,
@@ -54,6 +53,8 @@ class Aircraft(object):
         set_coms = {y_main["COMMAND"]: x_main
                     for x_main, y_main in EVE_IDS_MAP.items()}
         self.__eve_coms = set_coms
+
+        # TODO: Add bespoke COMmand variables
 
     def get_req_ids(self):
         return [x_id.upper()
@@ -120,7 +121,7 @@ class Aircraft(object):
             return {var_id: getattr(self, var_id) for var_id in self.get_req_ids()}
 
     def run(self, eve_id: str,
-            args: Optional[List[Union[str, int, float]]] = None,
+            args: Optional[List[IN_STRUCT]] = None,
             time_sleep: float = 0.1) -> None:
         """
 
@@ -169,7 +170,11 @@ class Aircraft(object):
         """
         com_ls = com_str.split("=")
         var_id = com_ls[0].strip()
-        args = com_ls[1].strip().split(chr(32))
+
+        if len(com_ls) > 1:
+            args = com_ls[1].strip().split(chr(32))
+        else:
+            args = []
 
         return self.com(var_id, args, time_sleep)
 

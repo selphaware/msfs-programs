@@ -23,3 +23,4 @@ PCT_REVR = lambda x: round(float(x) * MAX_VAL / 100)
 M_TO_FT = lambda x: round(x * M_TO_FT_RATIO)
 
 BOOL_CHK = lambda x: x == 1
+INIT_VAL = -9999
