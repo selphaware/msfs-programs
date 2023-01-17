@@ -1,10 +1,10 @@
-from typing import Optional, Union, Dict
+from typing import Optional, Union, Dict, List
 from SimConnect import AircraftRequests, AircraftEvents
 from time import sleep
 
 from aircraft.find_funcs import test_find_func, wrap_find_func
 from aircraft.idmap.event_map import EVE_IDS_MAP
-from idmap.request_map import REQ_IDS_MAP
+from aircraft.idmap.request_map import REQ_IDS_MAP
 
 INIT_VAL = -9999
 
@@ -12,7 +12,8 @@ INIT_VAL = -9999
 class Aircraft(object):
     def __init__(self,
                  req: Optional[AircraftRequests] = None,
-                 eve: Optional[AircraftEvents] = None):
+                 eve: Optional[AircraftEvents] = None,
+                 test: bool = False):
         """
 
         :param req:
@@ -20,6 +21,7 @@ class Aircraft(object):
         """
         self.__req = req
         self.__eve = eve
+        self.__test = test
 
         # GET Simulation Variables
         get_vars = {x: y["CAST_LOGIC"](INIT_VAL)
@@ -38,16 +40,30 @@ class Aircraft(object):
                     for x_main, y_main in EVE_IDS_MAP.items()}
         self.__dict__.update(set_vars)
 
-    def get_var_ids(self):
+        # Initialise GET attributes
+        if not test:
+            self.refresh(initialise=True)
+
+    def get_req_ids(self):
         return [x_id.upper()
                 for x_id in self.__dict__.keys() if not ("_" == x_id[0])]
 
-    def var_id_valid(self, var_id: str) -> bool:
-        return var_id.upper() in self.get_var_ids()
+    def get_eve_ids(self):
+        return [x_id.upper()
+                for x_id in self.__dict__.keys()
+                if ("_Aircraft__" not in x_id) and ("_" == x_id[0])]
 
-    def refresh(self, req_id: Optional[str] = None) -> None:
+    def req_id_valid(self, var_id: str) -> bool:
+        return var_id.upper() in self.get_req_ids()
+
+    def eve_id_valid(self, var_id: str) -> bool:
+        return var_id.upper() in self.get_eve_ids()
+
+    def refresh(self, req_id: Optional[str] = None,
+                initialise: bool = False) -> None:
         """
 
+        :param initialise:
         :param req_id:
         :return:
         """
@@ -55,30 +71,35 @@ class Aircraft(object):
             raise Exception("Requests variable req cannot be None.")
 
         if req_id is not None:
-            if not self.var_id_valid(req_id):
+            if not self.req_id_valid(req_id):
                 raise Exception(f"Request id {req_id} not found.")
 
             var_ids = [req_id]
 
         else:
-            var_ids = self.get_var_ids()
+            var_ids = self.get_req_ids()
 
         for var_id in var_ids:
+            if initialise:
+                self.__req.find(var_id).time = 200
+
             setattr(self, var_id, self.__req.get(var_id))
 
     def get(self, req_id: Optional[str] = None,
-            refresh_vals: bool = True, time_sleep: float = 0.0) -> Union[
+            refresh_vals: bool = True, time_sleep: float = 0.0,
+            request_refresh: bool = False) -> Union[
         str, int, float, Dict[str, Union[str, int, float]]
     ]:
         """
 
+        :param request_refresh:
         :param time_sleep:
         :param req_id:
         :param refresh_vals:
         :return:
         """
-        if refresh_vals:
-            self.refresh(req_id)
+        if refresh_vals and not self.__test:
+            self.refresh(req_id, initialise=request_refresh)
 
         if time_sleep > 0:
             sleep(time_sleep)
@@ -87,7 +108,17 @@ class Aircraft(object):
             return getattr(self, req_id)
 
         else:
-            return {var_id: getattr(self, var_id) for var_id in self.get_var_ids()}
+            return {var_id: getattr(self, var_id) for var_id in self.get_req_ids()}
+
+    def run(self, eve_id: str,
+            args: Optional[List[Union[str, int, float]]] = None,
+            time_sleep: float = 0.1) -> None:
+        eve_id = f"_{eve_id}"
+        if not self.eve_id_valid(eve_id):
+            raise Exception(f"Event id {eve_id} not found.")
+
+        efunc = getattr(self, eve_id)
+        efunc(time_sleep, *args)
 
 
 if __name__ == "__main__":

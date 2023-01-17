@@ -31,8 +31,9 @@ class ComCentral(object):
                   " Running in TEST MODE. NOT Connected to Flight Simulator."
                   + Style.RESET_ALL)
 
-        self.aircraft = Aircraft(self.req, self.eve)
+        self.aircraft = Aircraft(self.req, self.eve, test=self.test)
 
     def stop_sim(self):
-        self.sim.exit()
+        if not self.test:
+            self.sim.exit()
         print("Disconnected from Flight Simulator.")
