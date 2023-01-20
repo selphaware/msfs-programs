@@ -2,11 +2,11 @@ from typing import Optional, Tuple, List
 from SimConnect import AircraftRequests, AircraftEvents
 from time import sleep
 
-from aircraft.structs import IN_STRUCT, OUT_STRUCT
-from aircraft.conversions import INIT_VAL
+from auxiliary.conversions import INIT_VAL
 from aircraft.find_funcs import test_find_func, wrap_find_func
 from aircraft.idmap.event_map import EVE_IDS_MAP
 from aircraft.idmap.request_map import REQ_IDS_MAP
+from auxiliary.structs import IN_STRUCT, OUT_STRUCT
 
 
 class Aircraft(object):
@@ -171,7 +171,7 @@ class Aircraft(object):
         """
         try:
             init_com_ls = com_str.split("/")
-            com_ls = init_com_ls[0].split("=")
+            com_ls = init_com_ls[0].split("->")
             var_id = com_ls[0].strip()
 
             if len(com_ls) > 1:

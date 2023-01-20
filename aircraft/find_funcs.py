@@ -1,7 +1,7 @@
 from time import sleep
 from typing import Callable
 
-from aircraft.structs import IN_STRUCT
+from auxiliary.structs import IN_STRUCT
 
 
 def test_find_func(in_event_id: str):

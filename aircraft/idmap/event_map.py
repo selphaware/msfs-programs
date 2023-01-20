@@ -1,5 +1,5 @@
 from typing import Dict, Union, Callable
-from aircraft.conversions import IDENTITY, PCT_REVR, INT_CONV
+from auxiliary.conversions import IDENTITY, PCT_REVR, INT_CONV
 
 EVE_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
 
@@ -130,7 +130,7 @@ EVE_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
     },
 
     "THROTTLE_SET": {
-        "COMMAND": "S T ",
+        "COMMAND": "S T",
         "CAST_LOGIC": PCT_REVR,
         "UNIT": ""
     },

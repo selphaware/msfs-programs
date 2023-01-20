@@ -1,5 +1,5 @@
 from typing import Dict, Union, Callable
-from aircraft.conversions import (
+from auxiliary.conversions import (
     IDENTITY, RAD_TO_DEG_HALF, RAD_TO_DEG,
     PCT_CNVT, KM_TO_NM, M_TO_FT, BOOL_CHK,
 )
