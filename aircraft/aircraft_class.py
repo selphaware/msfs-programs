@@ -1,6 +1,7 @@
 from typing import Optional, Tuple, List
 from SimConnect import AircraftRequests, AircraftEvents
 from time import sleep
+from colorama import Fore, Style
 
 from auxiliary.conversions import INIT_VAL
 from aircraft.find_funcs import test_find_func, wrap_efunc
@@ -215,6 +216,11 @@ class Aircraft(object):
             ret.append((com_ln, self.com_inter(com_ln)))
 
         return ret
+
+    def pinfo(self):
+        for get_id, val in self.get():
+            print(Fore.YELLOW + f"{get_id}:" + Fore.CYAN +
+                  f" {val} {REQ_IDS_MAP[get_id]['UNITS']}" + Style.RESET_ALL)
 
 
 if __name__ == "__main__":
