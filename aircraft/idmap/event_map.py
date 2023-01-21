@@ -1,5 +1,5 @@
 from typing import Dict, Union, Callable
-from auxiliary.conversions import IDENTITY, PCT_REVR, INT_CONV
+from auxiliary.conversions import IDENTITY, PCT_REVR, INT_CONV, FLAP_CNV
 
 EVE_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
 
@@ -53,7 +53,7 @@ EVE_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
 
     "FLAPS_SET": {
         "COMMAND": "S FLAP",
-        "CAST_LOGIC": PCT_REVR,
+        "CAST_LOGIC": FLAP_CNV,
         "UNIT": "%"
     },
 
