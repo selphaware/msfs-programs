@@ -1,7 +1,7 @@
 from typing import Optional, Tuple, List
 from SimConnect import AircraftRequests, AircraftEvents
 from time import sleep
-from colorama import Fore, Style
+from colorama import Fore, Style, Back
 
 from auxiliary.conversions import INIT_VAL
 from aircraft.find_funcs import test_find_func, wrap_efunc
@@ -208,7 +208,9 @@ class Aircraft(object):
             return self.com(var_id, args, time_sleep=time_sleep, wait=wait)
 
         except Exception as err:
-            return f"ERROR: {err}"
+            err_str = f"ERROR: {err}"
+            print(Back.LIGHTRED_EX, Fore.BLACK + err_str + Style.RESET_ALL)
+            return err_str
 
     def inter(self, com_ls: List[str]) -> List[Tuple[str, OUT_STRUCT]]:
         ret = []

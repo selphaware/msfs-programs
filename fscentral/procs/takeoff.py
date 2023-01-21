@@ -59,10 +59,10 @@ class TakeOffProc(AirProc):
                 print(Fore.LIGHTRED_EX +
                       f"Setting elevator trim to {elevator_trim}% for liftoff" +
                       Style.RESET_ALL)
-                com(f"S E T -> {elevator_trim} / 0.1")
+                com(f"S E T -> {elevator_trim} / 1.25")
                 elev_trim_set = True
 
-            if (current_alt > 500 + com("G ALT W")) and wheel_down:
+            if (current_alt > 500 + com("G GD ALT W")) and wheel_down:
 
                 print(Fore.LIGHTBLUE_EX + "Reached 500 ft above ground level")
                 print(Fore.LIGHTBLUE_EX + "Wheel gears UP")
@@ -70,10 +70,10 @@ class TakeOffProc(AirProc):
                 wheel_down = False
 
                 print(Fore.LIGHTBLUE_EX + "Flaps fully down")
-                com("S FLAP -> 0 / 0.1")
+                com("S FLAP -> 0 / 0.5")
 
                 print(Fore.LIGHTBLUE_EX + "Set engines to 80%")
-                com("S T -> 80 / 0.1")
+                com("S T -> 80 / 0.5")
 
         print(Fore.LIGHTMAGENTA_EX + "Turn Autopilot ON")
         com("AP ON / 3.5")

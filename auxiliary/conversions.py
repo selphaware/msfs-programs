@@ -22,7 +22,7 @@ MACH_CNVT = lambda x: x * 10
 
 PCT_REVR = lambda x: round(float(x) * MAX_VAL / 100)
 
-FLAP_CNV = lambda x: PCT_REVR(x * 100 / 30)  # 0 - 30 degrees range for flaps
+FLAP_CNV = lambda x: PCT_REVR(float(x) * 100 / 30)  # 0 - 30 degrees range for flaps
 
 M_TO_FT = lambda x: round(x * M_TO_FT_RATIO)
 
