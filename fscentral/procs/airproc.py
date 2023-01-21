@@ -9,6 +9,7 @@ class AirProc(object):
 
     def __init__(self, airplane: Aircraft, inputs: PROC_INPUT_STRUCT):
         self.airplane = airplane
+        self.com = self.airplane.com_inter
         self.inputs = inputs
 
     @abc.abstractmethod
@@ -31,3 +32,38 @@ class AirProc(object):
             inputs[inp_name] = inp_def if inputs[inp_name] is None else inputs[inp_name]
 
         return inputs
+
+    # generic sub-procedures
+    def set_max_autobrake(self):
+        """
+
+        :return:
+        """
+        for _ in range(6):
+            self.com("ABR I / 0.1")
+
+    def get_next_alt(self, floating_alt: int, land_alt: int) -> int:
+        """
+
+        :param floating_alt:
+        :param land_alt:
+        :return:
+        """
+        val = None
+        count = 0
+        zval = False
+        while (val is None) or (val == 0):
+            val = self.com("G WP NX ALT W")
+            count += 1
+            if count > 100:
+                zval = True
+                break
+
+        g_alt = self.com("G GD ALT W")
+
+        if zval:
+            red_alt = round(((self.com("G ALT W") - g_alt) * .75) + g_alt)
+            return max(floating_alt + land_alt, red_alt)
+
+        else:
+            return round(val)

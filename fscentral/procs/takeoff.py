@@ -18,8 +18,7 @@ class TakeOffProc(AirProc):
         """
         # get input values (and defaults)
         inputs = self.get_inputs(inputs)
-
-        com = self.airplane.com_inter
+        com = self.com
 
         print("\nProceeding with Takeoff.")
         print(Fore.YELLOW + "Setting initial altitude to ")
