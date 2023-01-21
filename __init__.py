@@ -8,3 +8,4 @@ COM: Callable = AA.com_inter
 TKOF: Callable = CC.procs["TAKEOFF"].exproc
 APLA: Callable = CC.procs["APPROACH_LAND"].exproc
 AUTO: Callable = CC.procs["FULL_AUTO"].exproc
+P: Callable = AA.pinfo()
