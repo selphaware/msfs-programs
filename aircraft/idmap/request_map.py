@@ -9,7 +9,7 @@ REQ_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
     "PLANE_ALTITUDE": {
         "COMMAND": "G ALT",
         "CAST_LOGIC": IDENTITY,
-        "UNIT": "FT"
+        "UNITS": "FT"
     },
 
     "AIRSPEED_TRUE": {

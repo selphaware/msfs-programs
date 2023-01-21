@@ -44,7 +44,7 @@ class ComCentral(object):
 
         # initialise aircraft
         self.aircraft = Aircraft(self.req, self.eve, test=self.test)
-        print(Back.YELLOW + Fore.WHITE +
+        print(Back.YELLOW + Fore.BLUE +
               " Aircraft initialised. " + Style.RESET_ALL)
 
         # initialise flight procedures

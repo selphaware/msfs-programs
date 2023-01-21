@@ -2,7 +2,7 @@ from aircraft.aircraft_class import Aircraft
 from fscentral.procs.airproc import AirProc
 from auxiliary.structs import PROC_INPUT_STRUCT
 from fscentral.procs.approach_land import ApproachLandProc
-from fscentral.procs.procs import PROCS
+from fscentral.procs.procs_inputs import TAKEOFF_INPUTS, APPROACH_LAND_INPUTS
 from fscentral.procs.takeoff import TakeOffProc
 
 from colorama import Fore, Style, Back
@@ -13,8 +13,8 @@ class FullAutoProc(AirProc):
     def __init__(self, airplane: Aircraft, inputs: PROC_INPUT_STRUCT):
         super().__init__(airplane, inputs)
         self.__name = "FULL_AUTO"
-        self.takeoff_proc = TakeOffProc(airplane, PROCS["TAKEOFF"][1])
-        self.appla_proc = ApproachLandProc(airplane, PROCS["APPROACH_LAND"][1])
+        self.takeoff_proc = TakeOffProc(airplane, TAKEOFF_INPUTS)
+        self.appla_proc = ApproachLandProc(airplane, APPROACH_LAND_INPUTS)
 
     def exproc(self, **inputs):
         # get input values (and defaults)

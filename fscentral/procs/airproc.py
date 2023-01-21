@@ -30,7 +30,7 @@ class AirProc(object):
         inputs = {x.upper(): y for x, y in inputs.items()}
         for inp in self.inputs:
             inp_name, inp_def = inp
-            inputs[inp_name] = inp_def if inputs[inp_name] is None else inputs[inp_name]
+            inputs[inp_name] = inp_def if inputs.get(inp_name) is None else inputs[inp_name]
 
         return inputs
 

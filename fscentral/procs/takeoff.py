@@ -21,7 +21,6 @@ class TakeOffProc(AirProc):
         com = self.com
 
         print("\nProceeding with Takeoff.")
-        print(Fore.YELLOW + "Setting initial altitude to ")
         gr_alt = com("G GD ALT / 0.1 W") + 10000
         com(f"S ALT -> {gr_alt} / 0.1")
         print(Fore.YELLOW + f"Setting initial altitude to {gr_alt}")
@@ -35,14 +34,14 @@ class TakeOffProc(AirProc):
         if power < 0:
             if steady_throttle == 1:
                 for i in range(10, 110, 10):
-                    com(f"S T {i} / 0.2")
+                    com(f"S T -> {i} / 0.2")
 
             com("T F / 0.1")
         else:
             if power > 100:
                 print(Fore.RED + "ERROR: Power cannot be > 100%")
                 return
-            com(f"S T {power} / 0.1")
+            com(f"S T -> {power} / 0.1")
 
         print(Fore.LIGHTGREEN_EX + "Lifting off...")
         rise_alt = inputs["RISE_ALT"]
@@ -60,7 +59,7 @@ class TakeOffProc(AirProc):
                 print(Fore.LIGHTRED_EX +
                       f"Setting elevator trim to {elevator_trim}% for liftoff" +
                       Style.RESET_ALL)
-                com(f"S E T {elevator_trim} / 0.1")
+                com(f"S E T -> {elevator_trim} / 0.1")
                 elev_trim_set = True
 
             if (current_alt > 500 + com("G ALT W")) and wheel_down:
@@ -71,10 +70,10 @@ class TakeOffProc(AirProc):
                 wheel_down = False
 
                 print(Fore.LIGHTBLUE_EX + "Flaps fully down")
-                com("S FLAP 0 / 0.1")
+                com("S FLAP -> 0 / 0.1")
 
                 print(Fore.LIGHTBLUE_EX + "Set engines to 80%")
-                com("S T 80 / 0.1")
+                com("S T -> 80 / 0.1")
 
         print(Fore.LIGHTMAGENTA_EX + "Turn Autopilot ON")
         com("AP ON / 3.5")
@@ -89,8 +88,8 @@ class TakeOffProc(AirProc):
         cruise_kspd = inputs["CRUISE_KSPD"]
         print(Fore.YELLOW + f"Set cruise altitude of {cruise_alt} ft and "
                             f"speed {cruise_kspd} kts")
-        com(f"S ALT {cruise_alt} / 0.1")
-        com(f"S SPD K {cruise_kspd} / 0.1")
+        com(f"S ALT -> {cruise_alt} / 0.1")
+        com(f"S SPD K -> {cruise_kspd} / 0.1")
 
         print(Fore.WHITE + "Take off complete.")
         print("Hopefully you would have taken off safely "

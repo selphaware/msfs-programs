@@ -87,7 +87,7 @@ class ApproachLandProc(AirProc):
 
         # full flaps
         print("Flaps fully up")
-        com("S FLAP 30 / 2")
+        com("S FLAP -> 30 / 2")
 
         # enable approach model to automatically descend/approach airport and land
         print("Enable APR approach mode")
