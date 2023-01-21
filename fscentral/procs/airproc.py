@@ -27,6 +27,7 @@ class AirProc(object):
         :param inputs:
         :return:
         """
+        inputs = {x.upper(): y for x, y in inputs.items()}
         for inp in self.inputs:
             inp_name, inp_def = inp
             inputs[inp_name] = inp_def if inputs[inp_name] is None else inputs[inp_name]
