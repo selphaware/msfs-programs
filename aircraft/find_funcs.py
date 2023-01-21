@@ -23,7 +23,7 @@ def test_find_func(in_event_id: str):
     return _in_f1
 
 
-def wrap_find_func(ff_func: Callable):
+def wrap_efunc(ff_func: Callable):
     """
 
     :param ff_func:

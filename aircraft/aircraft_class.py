@@ -3,7 +3,7 @@ from SimConnect import AircraftRequests, AircraftEvents
 from time import sleep
 
 from auxiliary.conversions import INIT_VAL
-from aircraft.find_funcs import test_find_func, wrap_find_func
+from aircraft.find_funcs import test_find_func, wrap_efunc
 from aircraft.idmap.event_map import EVE_IDS_MAP
 from aircraft.idmap.request_map import REQ_IDS_MAP
 from auxiliary.structs import IN_STRUCT, OUT_STRUCT
@@ -23,12 +23,14 @@ class Aircraft(object):
         self.__eve = eve
         self.__test = test
 
+        # -- REQUESTS --
         # GET Simulation Variables
         get_vars = {x: y["CAST_LOGIC"](INIT_VAL)
                     for x, y in REQ_IDS_MAP.items()}
 
         self.__dict__.update(get_vars)
 
+        # -- EVENTS --
         # SET Simulation Variables
         if eve is None:
             find_func = test_find_func
@@ -36,8 +38,8 @@ class Aircraft(object):
         else:
             find_func = eve.find
 
-        set_vars = {f"_{x_main}": wrap_find_func(find_func)(x_main,
-                                                            y_main["CAST_LOGIC"])
+        set_vars = {f"_{x_main}": wrap_efunc(find_func)(x_main,
+                                                        y_main["CAST_LOGIC"])
                     for x_main, y_main in EVE_IDS_MAP.items()}
 
         self.__dict__.update(set_vars)
@@ -46,7 +48,8 @@ class Aircraft(object):
         if not test:
             self.refresh(initialise=True)
 
-        # Initialise COMmand variables
+        # -- COMMANDS --
+        # Initialise Command variables
         get_coms = {y["COMMAND"]: x for x, y in REQ_IDS_MAP.items()}
         self.__req_coms = get_coms
 
@@ -72,9 +75,11 @@ class Aircraft(object):
         return var_id.upper() in self.get_eve_ids()
 
     def refresh(self, req_id: Optional[str] = None,
-                initialise: bool = False) -> None:
+                initialise: bool = False,
+                wait: bool = False) -> None:
         """
 
+        :param wait:
         :param initialise:
         :param req_id:
         :return:
@@ -95,13 +100,25 @@ class Aircraft(object):
             if initialise:
                 self.__req.find(var_id).time = 200
 
-            setattr(self, var_id, self.__req.get(var_id))
+            val = self.__req.get(var_id)
+
+            while val is None:
+
+                val = self.__req.get(var_id)
+                sleep(0.01)
+
+                if not wait:
+                    break
+
+            setattr(self, var_id, val)
 
     def get(self, req_id: Optional[str] = None,
             refresh_vals: bool = True, time_sleep: float = 0.0,
-            request_refresh: bool = False) -> OUT_STRUCT:
+            request_refresh: bool = False,
+            wait: bool = False) -> OUT_STRUCT:
         """
 
+        :param wait:
         :param request_refresh:
         :param time_sleep:
         :param req_id:
@@ -109,16 +126,17 @@ class Aircraft(object):
         :return:
         """
         if refresh_vals and not self.__test:
-            self.refresh(req_id, initialise=request_refresh)
+            self.refresh(req_id, initialise=request_refresh, wait=wait)
 
         if time_sleep > 0:
             sleep(time_sleep)
 
         if req_id is not None:
-            return getattr(self, req_id)
+            return REQ_IDS_MAP[req_id]["CAST_LOGIC"](getattr(self, req_id))
 
         else:
-            return {var_id: getattr(self, var_id) for var_id in self.get_req_ids()}
+            return {var_id: REQ_IDS_MAP[var_id]["CAST_LOGIC"](getattr(self, var_id))
+                    for var_id in self.get_req_ids()}
 
     def run(self, eve_id: str,
             args: Optional[List[IN_STRUCT]] = None,
@@ -139,10 +157,11 @@ class Aircraft(object):
 
     def com(
             self, com_id: str, args: Optional[List[IN_STRUCT]] = None,
-            time_sleep: float = 0.1
+            time_sleep: float = 0.1, wait: bool = False
     ) -> Optional[OUT_STRUCT]:
         """
 
+        :param wait:
         :param com_id:
         :param args:
         :param time_sleep:
@@ -152,10 +171,10 @@ class Aircraft(object):
 
         if "G " == com_id[0:2]:
             var_id = self.__req_coms[com_id]
-            return self.get(var_id, time_sleep=time_sleep)
+            return self.get(var_id, time_sleep=time_sleep, wait=wait)
 
         elif "G" == com_id:
-            return self.get(time_sleep=time_sleep)
+            return self.get(time_sleep=time_sleep, wait=wait)
 
         else:
             var_id = self.__eve_coms[com_id]
@@ -170,6 +189,9 @@ class Aircraft(object):
         :return:
         """
         try:
+            com_str = com_str.upper()
+            wait = com_str[-2:] == " W"
+            com_str = com_str[0:-2] if wait else com_str
             init_com_ls = com_str.split("/")
             com_ls = init_com_ls[0].split("->")
             var_id = com_ls[0].strip()
@@ -182,7 +204,7 @@ class Aircraft(object):
             if len(init_com_ls) > 1:
                 time_sleep = float(init_com_ls[1].strip())
 
-            return self.com(var_id, args, time_sleep=time_sleep)
+            return self.com(var_id, args, time_sleep=time_sleep, wait=wait)
 
         except Exception as err:
             return f"ERROR: {err}"
