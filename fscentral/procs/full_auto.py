@@ -33,7 +33,7 @@ class FullAutoProc(AirProc):
         rise_alt = inputs["RISE_ALT"]
         cruise_alt = inputs["CRUISE_ALT"]
         cruise_kspd = inputs["CRUISE_KSPD"]
-        steady_throttle = inputs["POWER"]
+        steady_throttle = inputs["STEADY_THROTTLE"]
         elevator_trim = inputs["ELEVATOR_TRIM"]
         liftoff_kspd = inputs["LIFTOFF_KSPD"]
         self.takeoff_proc.exproc(power=power, rise_alt=rise_alt,
