@@ -1,6 +1,12 @@
 from typing import Callable
 from aircraft.aircraft_class import Aircraft
 from fscentral.comcentral import ComCentral
+import sys
+from colorama import Fore, Style
+
+sys.ps1 = Fore.YELLOW + "<" + Fore.LIGHTCYAN_EX + " FS " + Fore.YELLOW + \
+          "+ " + Fore.LIGHTMAGENTA_EX + "Py " + Fore.YELLOW + "> " + \
+          Fore.LIGHTGREEN_EX + ">> " + Style.RESET_ALL
 
 CC: ComCentral = ComCentral()
 AA: Aircraft = CC.aircraft
