@@ -220,7 +220,7 @@ class Aircraft(object):
         return ret
 
     def pinfo(self):
-        for get_id, val in self.get().items():
+        for get_id, val in self.get(wait=True).items():
             print(Fore.YELLOW + f"{get_id}:" + Fore.CYAN +
                   f" {val} {REQ_IDS_MAP[get_id]['UNITS']}" + Style.RESET_ALL)
 
