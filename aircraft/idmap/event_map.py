@@ -1,5 +1,5 @@
 from typing import Dict, Union, Callable
-from auxiliary.conversions import IDENTITY, PCT_REVR, INT_CONV, FLAP_CNV
+from auxiliary.conversions import IDENTITY, PCT_REVR, INT_CONV, FLAP_CNV, MACH_CNVT
 
 EVE_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
 
@@ -11,7 +11,7 @@ EVE_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
 
     "AP_MACH_VAR_SET": {
         "COMMAND": "S SPD M",
-        "CAST_LOGIC": IDENTITY,
+        "CAST_LOGIC": MACH_CNVT,
         "UNITS": "MACH"
     },
 

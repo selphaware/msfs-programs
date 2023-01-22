@@ -1,7 +1,7 @@
 from typing import Dict, Union, Callable
 from auxiliary.conversions import (
     IDENTITY, RAD_TO_DEG_HALF, RAD_TO_DEG,
-    PCT_CNVT, KM_TO_NM, M_TO_FT, BOOL_CHK, MACH_CNVT,
+    PCT_CNVT, KM_TO_NM, M_TO_FT, BOOL_CHK
 )
 
 REQ_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {

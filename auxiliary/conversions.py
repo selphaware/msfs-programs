@@ -18,7 +18,7 @@ KM_TO_NM = lambda x: x / 1000 / KM_TO_NM_RATIO
 
 PCT_CNVT = lambda x: x * 100
 
-MACH_CNVT = lambda x: x * 10
+MACH_CNVT = lambda x: int(100 * float(x))
 
 PCT_REVR = lambda x: round(float(x) * MAX_VAL / 100)
 
