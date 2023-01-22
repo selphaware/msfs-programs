@@ -2,7 +2,7 @@ from typing import Callable
 from aircraft.aircraft_class import Aircraft
 from fscentral.comcentral import ComCentral
 import sys
-from colorama import Fore, Style
+from colorama import Fore, Style, Back
 
 sys.ps1 = Fore.LIGHTBLUE_EX + "[" + Fore.LIGHTCYAN_EX + \
           " FS " + Fore.LIGHTBLUE_EX + \
@@ -23,3 +23,11 @@ if __name__ == "__main__":
     AUTO: Callable = CC.procs["FULL_AUTO"].exproc
     P: Callable = AA.pinfo
     Q: Callable = quit
+    print(
+        "\n" + Fore.BLACK + Back.LIGHTCYAN_EX +
+        " ***** --- ** - Flight Simulator "
+        "COMMAND CONSOLE v1.1 - ** --- ***** " +
+        Fore.LIGHTRED_EX + Back.BLACK +
+        " by Usman Ahmad @ selphaware @ polardesert\n" +
+        Style.RESET_ALL
+    )
