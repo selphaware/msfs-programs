@@ -15,7 +15,8 @@ class SimProcs(object):
                 cruise_alt: int = 33000,
                 cruise_kspd: int = 420,
                 steady_throttle: int = 1,
-                elevator_trim: int = -20
+                elevator_trim: int = -20,
+                liftoff_kspd: int = 165
                 ) -> Optional[Dict[str, str]]:
 
         print("\nProceeding with Takeoff.")
@@ -53,7 +54,7 @@ class SimProcs(object):
 
             if not elev_trim_set and (self.sc.get("AIRSPEED_INDICATED",
                                                   wait=True,
-                                                  xo=True) > 165):
+                                                  xo=True) > liftoff_kspd):
                 print(Fore.LIGHTRED_EX +
                       f"Setting elevator trim to {elevator_trim}% for liftoff" +
                       Style.RESET_ALL)
@@ -210,6 +211,7 @@ class SimProcs(object):
             cruise_kspd: int = 420,
             steady_throttle: int = 1,
             elevator_trim: int = -20,
+            liftoff_kspd: int = 165,
             floating_alt: int = 1500,
             cut_off: float = 5.5
     ) -> None:
@@ -219,7 +221,7 @@ class SimProcs(object):
         if inp == "Y":
             print(Style.RESET_ALL + "Proceeding.")
             self.takeoff(power, rise_alt, cruise_alt, cruise_kspd,
-                         steady_throttle, elevator_trim)
+                         steady_throttle, elevator_trim, liftoff_kspd)
 
             print(Fore.LIGHTMAGENTA_EX + Back.LIGHTYELLOW_EX + f"Navigating at "
                                                                "cruise altitude "
@@ -235,6 +237,8 @@ class SimProcs(object):
 
             while wp_id not in prev_ids:
                 next_id = self.sc.get("GPS_WP_NEXT_ID", wait=True).decode('utf-8')
+
+                # set speed and altitude if reaching rendezvous wp
                 if (wp_id == next_id) and not approaching_rendezvous:
                     half_alt = min(
                         self.sc.get("PLANE_ALTITUDE", wait=True, xo=True),
@@ -257,10 +261,26 @@ class SimProcs(object):
 
                     approaching_rendezvous = True
 
+                # control to ensure altitude is high enough i.e. don't crash into
+                # mountains
+                # good test is to fly to OPIS (Pakistan) via Afghanistan BOBAM wp.
+                chk_pln_alt = self.sc.get("PLANE_ALTITUDE", wait=True, xo=True)
+                chk_grd_alt = self.sc.get("GROUND_ALTITUDE",
+                                          wait=True, xo=True) * M_TO_FT
+                if (chk_pln_alt - chk_grd_alt) < 2500:
+                    fix_alt = round(chk_grd_alt) + 3000
+                    print(Fore.LIGHTWHITE_EX + Back.RED +
+                          f" Altitude TOO LOW @ {chk_pln_alt} < 2500ft above ground level. "
+                          f"Ascending to FIX altitude of {fix_alt}." + Style.RESET_ALL)
+                    self.sc.execute(f"S ALT {fix_alt}", "LO")
+
+                # prev wp id cache
                 prev_id = self.sc.get("GPS_WP_PREV_ID", wait=True).decode('utf-8')
                 if prev_id not in prev_ids:
                     prev_ids.append(prev_id)
                 time.sleep(1)
+
+                # pinfo every 5 mins
                 if count % (60 * 5) == 0:
                     patt = "-" * 55
                     print(Fore.GREEN + patt + Style.RESET_ALL)
@@ -327,7 +347,8 @@ class SimProcs(object):
                         ("CRUISE_ALT", 33000, int),
                         ("CRUISE_KSPD", 420, int),
                         ("STEADY_THROTTLE", 1, int),
-                        ("ELEVATOR_TRIM", -20, int)
+                        ("ELEVATOR_TRIM", -20, int),
+                        ("LIFTOFF_KSPD", 165, int)
                     ]
                     tk_args = self.get_proc_inputs(tk_args, tk_map)
                     print(Style.RESET_ALL + "Starting TAKEOFF")
@@ -357,6 +378,7 @@ class SimProcs(object):
                         ("CRUISE_KSPD", 420, int),
                         ("STEADY_THROTTLE", 1, int),
                         ("ELEVATOR_TRIM", -20, int),
+                        ("LIFTOFF_KSPD", 165, int),
                         ("FLOATING_ALT", 1500, int),
                         ("CUT_OFF", 5.5, float)
                     ]

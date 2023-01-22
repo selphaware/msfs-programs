@@ -83,7 +83,7 @@ class SimCentral(object):
                 return None
 
     def run(self, event_id: Optional[str], sleep_range: str,
-            *args) -> Dict[str, Union[bool, str]]:
+            *args: Union[str, float, int]) -> Dict[str, Union[bool, str]]:
 
         try:
             if not self.test:
