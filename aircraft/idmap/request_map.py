@@ -26,8 +26,8 @@ REQ_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
 
     "AIRSPEED_MACH": {
         "COMMAND": "G SPD M",
-        "CAST_LOGIC": MACH_CNVT,
-        "UNITS": "KTS"
+        "CAST_LOGIC": IDENTITY,
+        "UNITS": "MACH"
     },
 
     "VERTICAL_SPEED": {

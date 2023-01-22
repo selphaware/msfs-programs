@@ -11,7 +11,7 @@ EVE_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
 
     "AP_MACH_VAR_SET": {
         "COMMAND": "S SPD M",
-        "CAST_LOGIC": lambda x: int(10 * float(x)),
+        "CAST_LOGIC": IDENTITY,
         "UNITS": "MACH"
     },
 
