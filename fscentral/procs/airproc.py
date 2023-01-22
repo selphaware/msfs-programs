@@ -2,6 +2,8 @@ from aircraft.aircraft_class import Aircraft
 from auxiliary.structs import PROC_INPUT_STRUCT, IN_STRUCT
 import abc
 from typing import Dict
+from colorama import Fore, Back, Style
+from time import sleep
 
 
 class AirProc(object):
@@ -68,3 +70,28 @@ class AirProc(object):
 
         else:
             return round(val)
+
+    def altitude_control(self):
+        """
+
+        :return:
+        """
+        # control to ensure altitude is high enough i.e. don't crash into
+        # mountains
+        # good test is to fly to OPIS (Pakistan) via Afghanistan BOBAM wp.
+        com = self.com
+        chk_pln_alt = com("G ALT W")
+        chk_grd_alt = com("G GD ALT W")
+
+        if (chk_pln_alt - chk_grd_alt) < 2500:
+
+            fix_alt = round(chk_grd_alt) + 3000
+            print(
+                Fore.LIGHTWHITE_EX + Back.RED +
+                f" Altitude TOO LOW @ {chk_pln_alt} < 2500ft above ground level. "
+                f"Ascending to FIX altitude of {fix_alt}." + Style.RESET_ALL
+                )
+
+            com(f"S ALT -> {fix_alt} / 0.1")
+
+        sleep(0.1)

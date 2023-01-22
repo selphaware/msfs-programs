@@ -75,6 +75,9 @@ class ApproachLandProc(AirProc):
                     f"{cspeed}"
                     )
 
+            # ensure plane is 2500ft+ above ground level
+            self.altitude_control()
+
         print(Style.RESET_ALL + Fore.LIGHTBLUE_EX + "APPROACHING AIRPORT !!!")
 
         final_alt = min(int(land_alt + floating_alt), com("G ALT W"))
