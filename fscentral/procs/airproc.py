@@ -80,7 +80,7 @@ class AirProc(object):
         # mountains
         # good test is to fly to OPIS (Pakistan) via Afghanistan BOBAM wp.
         com = self.com
-        chk_pln_alt = com("G ALT W")
+        chk_pln_alt = com("G AP ALT W")
         chk_grd_alt = com("G GD ALT W")
 
         if (chk_pln_alt - chk_grd_alt) < 2500:

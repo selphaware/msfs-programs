@@ -12,6 +12,12 @@ REQ_IDS_MAP: Dict[str, Dict[str, Union[str, Callable]]] = {
         "UNITS": "FT"
     },
 
+    "AUTOPILOT_ALTITUDE_LOCK_VAR": {
+        "COMMAND": "G AP ALT",
+        "CAST_LOGIC": IDENTITY,
+        "UNITS": "FT"
+    },
+
     "AIRSPEED_TRUE": {
         "COMMAND": "G SPD T",
         "CAST_LOGIC": IDENTITY,
