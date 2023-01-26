@@ -79,16 +79,27 @@ class AirProc(object):
         # control to ensure altitude is high enough i.e. don't crash into
         # mountains
         # good test is to fly to OPIS (Pakistan) via Afghanistan BOBAM wp.
+        # TODO: # FIX: Sydney to NZ, CC [Clearing those mountains not working on
+        #  descent]
+
+        # TODO: Also look at next wp alt
+
         com = self.com
-        chk_pln_alt = com("G AP ALT W")
+        chk_curr_alt = com("G AP ALT W")
+        chk_nex_alt = com("G WP NX ALT W")
+        chk_pln_alt = max(chk_curr_alt, chk_nex_alt)
         chk_grd_alt = com("G GD ALT W")
 
-        if (chk_pln_alt - chk_grd_alt) < 2500:
+        if (
+                ((chk_pln_alt - chk_grd_alt) < 2500) or
+                ((chk_curr_alt - chk_grd_alt) < 2500)
+        ):
 
-            fix_alt = round(chk_grd_alt) + 3000
+            fix_alt = max(round(chk_grd_alt) + 2500, round(chk_nex_alt) + 500)
             print(
                 Fore.LIGHTWHITE_EX + Back.RED +
                 f" Altitude TOO LOW @ {chk_pln_alt} < 2500ft above ground level. "
+                "(now or eventually). "
                 f"Ascending to FIX altitude of {fix_alt}." + Style.RESET_ALL
                 )
 

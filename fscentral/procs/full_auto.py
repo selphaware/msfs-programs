@@ -60,7 +60,7 @@ class FullAutoProc(AirProc):
 
             # set speed and altitude if reaching rendezvous wp
             if (wp_id == next_id) and not approaching_rendezvous:
-                half_alt = min(com("G ALT W"), 8000 + round(com("G GD ALT W")))
+                half_alt = min(com("G ALT W"), com("G WP NX ALT W"))
                 print(Fore.CYAN + f"@ RENDEZVOUS Reducing Altitude to"
                                   f" {half_alt}" +
                       Style.RESET_ALL)
