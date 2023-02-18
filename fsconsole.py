@@ -22,7 +22,7 @@ if __name__ == "__main__":
     APLA: Callable = CC.procs["APPROACH_LAND"].exproc
     AUTO: Callable = CC.procs["FULL_AUTO"].exproc
     P: Callable = AA.pinfo
-    Q: Callable = quit
+    Q: Callable = sys.exit
     print(
         "\n" + Fore.BLACK + Back.LIGHTCYAN_EX +
         " ***** --- ** - Flight Simulator "
@@ -31,3 +31,5 @@ if __name__ == "__main__":
         " by Usman Ahmad @ selphaware @ polardesert\n" +
         Style.RESET_ALL
     )
+    while True:
+        exec(input(" << [ FSPy ] >> "))
